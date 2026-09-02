@@ -1,7 +1,6 @@
 """
-Manejo de efectos de sonido mecánicos y sintetizador de voz natural en español.
+Manejo de efectos de sonido mecánicos y sintetizador de voz natural en español e inglés.
 Multiplataforma: compatible con Linux, macOS y Windows.
-Compatible con empaquetado de ejecutable único (PyInstaller sys._MEIPASS).
 """
 
 import hashlib
@@ -106,16 +105,6 @@ class SoundPlayer:
         except ImportError:
             self.has_gtts = False
 
-        self.macos_voice = None
-        if self.system == "Darwin" and shutil.which("say"):
-            self._detect_macos_spanish_voice()
-
-        self.system_tts = None
-        if shutil.which("spd-say"):
-            self.system_tts = "spd-say"
-        elif shutil.which("espeak"):
-            self.system_tts = "espeak"
-
         self.muted = False
 
     @classmethod
@@ -123,23 +112,6 @@ class SoundPlayer:
         if cls._instance is None:
             cls._instance = SoundPlayer()
         return cls._instance
-
-    def _detect_macos_spanish_voice(self):
-        try:
-            out = subprocess.check_output(["say", "-v", "?"], text=True, errors="ignore")
-            preferred = ["Monica", "Paulina", "Jorge", "Soledad", "Diego", "Angelica", "Juan"]
-            for voice in preferred:
-                if voice in out:
-                    self.macos_voice = voice
-                    return
-            for line in out.splitlines():
-                if "es_" in line or "es-" in line:
-                    parts = line.split()
-                    if parts:
-                        self.macos_voice = parts[0]
-                        return
-        except Exception:
-            pass
 
     def play_click(self):
         if self.muted or not self.mp3_player:
@@ -151,50 +123,51 @@ class SoundPlayer:
             return
         threading.Thread(target=self._play_file, args=(self.chime_path,), daemon=True).start()
 
-    def speak_text(self, text: str):
+    def speak_text(self, text: str, lang: str = "es"):
         if self.muted:
             return
-        threading.Thread(target=self._do_speak, args=(text,), daemon=True).start()
+        threading.Thread(target=self._do_speak, args=(text, lang), daemon=True).start()
 
-    def _do_speak(self, text: str):
-        cache_key = hashlib.md5(text.strip().encode("utf-8")).hexdigest()
+    def _do_speak(self, text: str, lang: str = "es"):
+        cache_key = hashlib.md5(f"{lang}_{text.strip()}".encode("utf-8")).hexdigest()
         cache_file = os.path.join(CACHE_DIR, f"{cache_key}.mp3")
 
         if os.path.exists(cache_file):
             self._play_file(cache_file)
             return
 
+        # 1. gTTS en segundo plano
         if self.has_gtts:
             try:
                 from gtts import gTTS
-                tts = gTTS(text=text, lang="es")
+                tts = gTTS(text=text, lang="es" if lang == "es" else "en")
                 tts.save(cache_file)
                 self._play_file(cache_file)
                 return
             except Exception:
                 pass
 
+        # 2. macOS say nativo
         if self.system == "Darwin" and shutil.which("say"):
             try:
-                cmd = ["say", "-r", "160"]
-                if self.macos_voice:
-                    cmd.extend(["-v", self.macos_voice])
-                cmd.append(text)
+                voice = "Samantha" if lang == "en" else "Monica"
+                cmd = ["say", "-r", "160", "-v", voice, text]
                 subprocess.run(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=False)
                 return
             except Exception:
                 pass
 
-        if self.system_tts == "spd-say":
+        # 3. Fallbacks del sistema
+        if shutil.which("spd-say"):
             try:
-                subprocess.run(["spd-say", "-l", "es", "-r", "-10", text],
+                subprocess.run(["spd-say", "-l", lang, "-r", "-10", text],
                                stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=False)
                 return
             except Exception:
                 pass
-        elif self.system_tts == "espeak":
+        elif shutil.which("espeak"):
             try:
-                subprocess.run(["espeak", "-v", "es", "-s", "140", text],
+                subprocess.run(["espeak", "-v", lang, "-s", "140", text],
                                stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=False)
                 return
             except Exception:

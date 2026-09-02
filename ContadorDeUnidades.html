@@ -91,6 +91,14 @@
     .btn-yellow:hover {
       background: #FAF089;
     }
+    .btn-orange {
+      background: #FEEBC8;
+      color: #7B341E;
+      border-color: #DD6B20;
+    }
+    .btn-orange:hover {
+      background: #FBD38D;
+    }
     .btn-red {
       background: #FED7D7;
       color: #9B2C2C;
@@ -240,17 +248,25 @@
       text-shadow: 0 3px 6px rgba(0,0,0,0.8);
     }
 
-    /* Punto Separador de Miles */
-    .thousands-dot {
+    /* Punto o Coma Separador de Miles */
+    .thousands-mark {
+      position: absolute;
+      pointer-events: none;
+      display: none;
+      color: #E6E6EB;
+      font-weight: 900;
+    }
+    .thousands-mark.dot {
       width: 6px;
       height: 6px;
       background-color: #E6E6EB;
       border-radius: 50%;
-      position: absolute;
       top: calc(50% + 14px);
       box-shadow: 0 0 3px rgba(255,255,255,0.8);
-      pointer-events: none;
-      display: none;
+    }
+    .thousands-mark.comma {
+      font-size: 24px;
+      top: calc(50% + 4px);
     }
 
     /* Sombra de Piso */
@@ -352,6 +368,11 @@
       color: #22543D;
       border-color: #38A169;
     }
+    .banner.manual {
+      background: #FEEBC8;
+      color: #7B341E;
+      border-color: #DD6B20;
+    }
 
     /* Panel de Retos */
     .challenge-panel {
@@ -391,18 +412,22 @@
   <div class="top-bar">
     <div class="top-bar-row">
       <div class="btn-group">
-        <span style="font-weight: 800; font-size: 13px; color: #4A5568;">Nivel:</span>
+        <span id="lblLevel" style="font-weight: 800; font-size: 13px; color: #4A5568;">Nivel:</span>
         <button id="lvl3" onclick="setLevel(3)">3 Dígitos</button>
         <button id="lvl4" onclick="setLevel(4)">4 Dígitos</button>
         <button id="lvl6" class="active" onclick="setLevel(6)">6 Dígitos</button>
-        <button class="btn-dashed" onclick="addNextColumn()">+ Columna</button>
+        <button id="btnAddCol" class="btn-dashed" onclick="addNextColumn()">+ Columna</button>
       </div>
-      <button id="btnZeros" onclick="toggleZeros()">Ceros Izq: Ocultos</button>
+      <div class="btn-group">
+        <button id="btnMode" onclick="toggleMode()">Modo: Automático</button>
+        <button id="btnLang" class="btn-yellow" onclick="toggleLanguage()">🌐 ES</button>
+      </div>
     </div>
     <div class="top-bar-row">
       <div class="btn-group">
-        <button class="btn-yellow" onclick="setRandom()">🎲 Número Sorpresa</button>
-        <button class="btn-red" onclick="resetCounter()">🔄 Poner a 0</button>
+        <button id="btnZeros" onclick="toggleZeros()">Ceros Izq: Ocultos</button>
+        <button id="btnRandom" class="btn-yellow" onclick="setRandom()">🎲 Número Sorpresa</button>
+        <button id="btnReset" class="btn-red" onclick="resetCounter()">🔄 Poner a 0</button>
       </div>
       <div class="btn-group">
         <button id="btnSound" onclick="toggleSound()">🔊 Sonido: ON</button>
@@ -415,7 +440,7 @@
   <div class="odometer-wrapper">
     <div class="counter-columns">
 
-      <!-- CM -->
+      <!-- CM / HTh -->
       <div class="column-unit" id="col_5">
         <div class="header-tag mil" id="tag_5">CM</div>
         <button class="arrow-btn" onclick="stepColumn(5, 1)">
@@ -431,7 +456,7 @@
         </button>
       </div>
 
-      <!-- DM -->
+      <!-- DM / TTh -->
       <div class="column-unit" id="col_4">
         <div class="header-tag mil" id="tag_4">DM</div>
         <button class="arrow-btn" onclick="stepColumn(4, 1)">
@@ -447,7 +472,7 @@
         </button>
       </div>
 
-      <!-- UM -->
+      <!-- UM / Th -->
       <div class="column-unit" id="col_3" style="position: relative;">
         <div class="header-tag mil" id="tag_3">UM</div>
         <button class="arrow-btn" onclick="stepColumn(3, 1)">
@@ -457,15 +482,15 @@
           <div class="wheel" id="wheel_3" onwheel="onWheelScroll(event, 3)">
             <div class="wheel-inner" id="inner_3"></div>
           </div>
-          <!-- Punto de miles entre UM y C -->
-          <div class="thousands-dot" id="thousandsDot"></div>
+          <!-- Separador de miles entre UM y C -->
+          <div class="thousands-mark" id="thousandsMark"></div>
         </div>
         <button class="arrow-btn" onclick="stepColumn(3, -1)">
           <svg viewBox="0 0 24 16"><polygon points="12,16 0,0 24,0"/></svg>
         </button>
       </div>
 
-      <!-- C -->
+      <!-- C / H -->
       <div class="column-unit" id="col_2">
         <div class="header-tag simple" id="tag_2">C</div>
         <button class="arrow-btn" onclick="stepColumn(2, 1)">
@@ -481,7 +506,7 @@
         </button>
       </div>
 
-      <!-- D -->
+      <!-- D / T -->
       <div class="column-unit" id="col_1">
         <div class="header-tag simple" id="tag_1">D</div>
         <button class="arrow-btn" onclick="stepColumn(1, 1)">
@@ -497,7 +522,7 @@
         </button>
       </div>
 
-      <!-- U -->
+      <!-- U / O -->
       <div class="column-unit" id="col_0">
         <div class="header-tag simple" id="tag_0">U</div>
         <button class="arrow-btn" onclick="stepColumn(0, 1)">
@@ -520,8 +545,8 @@
   <!-- Panel de Descomposición Aditiva y Palabras -->
   <div class="breakdown-panel">
     <div class="breakdown-header">
-      <span class="breakdown-title">✨ Valor Posicional y Descomposición</span>
-      <button class="btn-speak" onclick="speakCurrentNumber()">🔊 Escuchar cómo se lee</button>
+      <span class="breakdown-title" id="lblBreakdownTitle">✨ Valor Posicional y Descomposición</span>
+      <button class="btn-speak" id="btnSpeak" onclick="speakCurrentNumber()">🔊 Escuchar cómo se lee</button>
     </div>
     <div class="words-box" id="wordsDisplay"></div>
     <div class="chips-row" id="chipsContainer"></div>
@@ -531,13 +556,13 @@
   <!-- Panel de Retos -->
   <div class="challenge-panel" id="challengePanel">
     <div class="challenge-header">
-      <span style="font-weight: 800; color: #744210;">🎮 Modo Desafíos Matemáticos</span>
+      <span style="font-weight: 800; color: #744210;" id="lblChallengeTitle">🎮 Modo Desafíos Matemáticos</span>
       <span style="font-weight: 800; color: #D69E2E;" id="starsCount">⭐ 0 Estrellas</span>
     </div>
     <div class="challenge-prompt" id="challengePrompt">Pulsa 'Nuevo Desafío' para comenzar.</div>
     <div class="challenge-actions">
-      <button style="background: #ED8936; color: white;" onclick="newChallenge()">🎲 Nuevo Desafío</button>
-      <button style="background: #38A169; color: white;" onclick="checkChallenge()">✅ Comprobar</button>
+      <button style="background: #ED8936; color: white;" id="btnNewChallenge" onclick="newChallenge()">🎲 Nuevo Desafío</button>
+      <button style="background: #38A169; color: white;" id="btnCheckChallenge" onclick="checkChallenge()">✅ Comprobar</button>
       <span id="challengeFeedback" style="font-weight: 800; margin-left: 10px;"></span>
     </div>
   </div>
@@ -550,12 +575,19 @@
   let activeDigits = 6;
   let hideLeadingZeros = true;
   let soundEnabled = true;
+  let isManualMode = false; // MODO MANUAL: no suma automáticamente
+  let currentLang = "es";    // "es" o "en"
   let stars = 0;
   let currentChallenge = null;
 
   const weights = [1, 10, 100, 1000, 10000, 100000];
-  const colNames = ["U", "D", "C", "UM", "DM", "CM"];
-  const colFullNames = ["Unidades", "Decenas", "Centenas", "Unidades de Mil", "Decenas de Mil", "Centenas de Mil"];
+
+  const colNamesES = ["U", "D", "C", "UM", "DM", "CM"];
+  const colFullNamesES = ["Unidades", "Decenas", "Centenas", "Unidades de Mil", "Decenas de Mil", "Centenas de Mil"];
+
+  const colNamesEN = ["O", "T", "H", "Th", "TTh", "HTh"];
+  const colFullNamesEN = ["Ones", "Tens", "Hundreds", "Thousands", "Ten Thousands", "Hundred Thousands"];
+
   const isMilFlags = [false, false, false, true, true, true];
 
   // Audio Context Web Audio para Clics Mecánicos sin archivos externos
@@ -563,9 +595,7 @@
   let audioCtx = null;
 
   function initAudio() {
-    if (!audioCtx) {
-      audioCtx = new AudioContext();
-    }
+    if (!audioCtx) audioCtx = new AudioContext();
   }
 
   function playClickSound() {
@@ -604,12 +634,10 @@
     } catch(e) {}
   }
 
-  // Inicializar cilindros con dígitos 0..9 duplicados para giro infinito
   function initWheels() {
     for (let i = 0; i < 6; i++) {
       const inner = document.getElementById("inner_" + i);
       inner.innerHTML = "";
-      // Crear 30 dígitos para permitir giro suave
       for (let cycle = 0; cycle < 3; cycle++) {
         for (let d = 0; d < 10; d++) {
           const div = document.createElement("div");
@@ -625,56 +653,90 @@
     return Math.floor(currentValue / weights[idx]) % 10;
   }
 
-  function formatSpanishNumber(n) {
+  function formatNumber(n) {
+    if (currentLang === "en") {
+      return n.toLocaleString("en-US");
+    }
     return n.toLocaleString("es-ES");
   }
 
-  // Conversión a palabras en español
-  const UNIDADES = ["cero", "uno", "dos", "tres", "cuatro", "cinco", "seis", "siete", "ocho", "nueve"];
-  const ESPECIALES_10 = ["diez", "once", "doce", "trece", "catorce", "quince", "dieciséis", "diecisiete", "dieciocho", "diecinueve"];
-  const DECENAS = ["", "", "veinte", "treinta", "cuarenta", "cincuenta", "sesenta", "setenta", "ochenta", "noventa"];
-  const VEINTES = ["veinte", "veintiuno", "veintidós", "veintitrés", "veinticuatro", "veinticinco", "veintiséis", "veintisiete", "veintiocho", "veintinueve"];
-  const CENTENAS = ["", "ciento", "doscientos", "trescientos", "cuatrocientos", "quinientos", "seiscientos", "setecientos", "ochocientos", "novecientos"];
+  // Conversión de números a palabras (ES y EN)
+  const UNIDADES_ES = ["cero", "uno", "dos", "tres", "cuatro", "cinco", "seis", "siete", "ocho", "nueve"];
+  const ESPECIALES_10_ES = ["diez", "once", "doce", "trece", "catorce", "quince", "dieciséis", "diecisiete", "dieciocho", "diecinueve"];
+  const DECENAS_ES = ["", "", "veinte", "treinta", "cuarenta", "cincuenta", "sesenta", "setenta", "ochenta", "noventa"];
+  const VEINTES_ES = ["veinte", "veintiuno", "veintidós", "veintitrés", "veinticuatro", "veinticinco", "veintiséis", "veintisiete", "veintiocho", "veintinueve"];
+  const CENTENAS_ES = ["", "ciento", "doscientos", "trescientos", "cuatrocientos", "quinientos", "seiscientos", "setecientos", "ochocientos", "novecientos"];
 
-  function centenasAPalabras(n) {
+  function centenasAPalabrasES(n) {
     if (n === 0) return "";
     if (n === 100) return "cien";
     let p = [];
     let c = Math.floor(n / 100);
     let r = n % 100;
-    if (c > 0) p.push(CENTENAS[c]);
+    if (c > 0) p.push(CENTENAS_ES[c]);
     if (r === 0) return p.join(" ");
-    if (r < 10) p.push(UNIDADES[r]);
-    else if (r < 20) p.push(ESPECIALES_10[r - 10]);
-    else if (r < 30) p.push(VEINTES[r - 20]);
+    if (r < 10) p.push(UNIDADES_ES[r]);
+    else if (r < 20) p.push(ESPECIALES_10_ES[r - 10]);
+    else if (r < 30) p.push(VEINTES_ES[r - 20]);
     else {
       let d = Math.floor(r / 10);
       let u = r % 10;
-      p.push(u === 0 ? DECENAS[d] : DECENAS[d] + " y " + UNIDADES[u]);
+      p.push(u === 0 ? DECENAS_ES[d] : DECENAS_ES[d] + " y " + UNIDADES_ES[u]);
     }
     return p.join(" ");
   }
 
-  function numeroAPalabras(n) {
-    if (n === 0) return "Cero";
-    let miles = Math.floor(n / 1000);
-    let units = n % 1000;
+  const UNITS_EN = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"];
+  const TEENS_EN = ["ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen"];
+  const TENS_EN = ["", "", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"];
+
+  function hundredsToWordsEN(n) {
+    if (n === 0) return "";
     let p = [];
-    if (miles > 0) {
-      if (miles === 1) p.push("mil");
-      else {
-        let tm = centenasAPalabras(miles);
-        if (tm.endsWith("veintiuno")) tm = tm.slice(0, -3) + "ún";
-        else if (tm.endsWith(" uno")) tm = tm.slice(0, -4) + " un";
-        p.push(tm + " mil");
-      }
+    let c = Math.floor(n / 100);
+    let r = n % 100;
+    if (c > 0) p.push(UNITS_EN[c] + " hundred");
+    if (r === 0) return p.join(" ");
+    if (r < 10) p.push(UNITS_EN[r]);
+    else if (r < 20) p.push(TEENS_EN[r - 10]);
+    else {
+      let d = Math.floor(r / 10);
+      let u = r % 10;
+      p.push(u === 0 ? TENS_EN[d] : TENS_EN[d] + "-" + UNITS_EN[u]);
     }
-    if (units > 0) p.push(centenasAPalabras(units));
-    let res = p.join(" ");
-    return res.charAt(0).toUpperCase() + res.slice(1);
+    return p.join(" ");
   }
 
-  // Actualizar UI
+  function numberToWords(n) {
+    if (currentLang === "en") {
+      if (n === 0) return "Zero";
+      let miles = Math.floor(n / 1000);
+      let units = n % 1000;
+      let p = [];
+      if (miles > 0) p.push(hundredsToWordsEN(miles) + " thousand");
+      if (units > 0) p.push(hundredsToWordsEN(units));
+      let res = p.join(" ").trim();
+      return res.charAt(0).toUpperCase() + res.slice(1);
+    } else {
+      if (n === 0) return "Cero";
+      let miles = Math.floor(n / 1000);
+      let units = n % 1000;
+      let p = [];
+      if (miles > 0) {
+        if (miles === 1) p.push("mil");
+        else {
+          let tm = centenasAPalabrasES(miles);
+          if (tm.endsWith("veintiuno")) tm = tm.slice(0, -3) + "ún";
+          else if (tm.endsWith(" uno")) tm = tm.slice(0, -4) + " un";
+          p.push(tm + " mil");
+        }
+      }
+      if (units > 0) p.push(centenasAPalabrasES(units));
+      let res = p.join(" ").trim();
+      return res.charAt(0).toUpperCase() + res.slice(1);
+    }
+  }
+
   let prevDigits = [0, 0, 0, 0, 0, 0];
 
   function updateUI(animated = true) {
@@ -687,55 +749,64 @@
       currentDigits[i] = getDigit(i);
     }
 
-    // Visibilidad de columnas (Ocultación de ceros a la izquierda)
+    // Visibilidad de columnas
     let visibleCount = activeDigits;
     if (hideLeadingZeros) {
       visibleCount = currentValue === 0 ? 1 : String(currentValue).length;
       visibleCount = Math.min(activeDigits, Math.max(1, visibleCount));
     }
 
+    const colNames = currentLang === "en" ? colNamesEN : colNamesES;
+    const colFullNames = currentLang === "en" ? colFullNamesEN : colFullNamesES;
+
     for (let i = 0; i < 6; i++) {
       const col = document.getElementById("col_" + i);
       const isVisible = i < visibleCount;
-      if (isVisible) {
-        col.classList.remove("hidden");
-      } else {
-        col.classList.add("hidden");
-      }
+      if (isVisible) col.classList.remove("hidden");
+      else col.classList.add("hidden");
 
-      // Animación EXCLUSIVA si el dígito cambió
+      // Actualizar texto del encabezado
+      document.getElementById("tag_" + i).textContent = colNames[i];
+
       const inner = document.getElementById("inner_" + i);
       const digit = currentDigits[i];
       if (currentDigits[i] !== prevDigits[i] || !animated) {
-        // Desplazamiento en el tambor: ciclo base 10 + dígito
         const targetY = -(10 + digit) * 154;
         inner.style.transform = `translateY(${targetY}px)`;
       }
     }
     prevDigits = [...currentDigits];
 
-    // Punto de miles entre UM y C
-    const dot = document.getElementById("thousandsDot");
+    // Separador de miles entre UM (3) y C (2)
+    const mark = document.getElementById("thousandsMark");
     if (currentValue >= 1000 && visibleCount >= 4) {
-      dot.style.display = "block";
-      dot.style.right = "-6px";
+      mark.style.display = "block";
+      if (currentLang === "en") {
+        mark.className = "thousands-mark comma";
+        mark.textContent = ",";
+        mark.style.right = "-8px";
+      } else {
+        mark.className = "thousands-mark dot";
+        mark.textContent = "";
+        mark.style.right = "-6px";
+      }
     } else {
-      dot.style.display = "none";
+      mark.style.display = "none";
     }
 
     // Actualizar palabras y número con puntuación
-    const formatted = formatSpanishNumber(currentValue);
-    const words = numeroAPalabras(currentValue);
+    const formatted = formatNumber(currentValue);
+    const words = numberToWords(currentValue);
     document.getElementById("wordsDisplay").innerHTML = `<b>${formatted}</b>  —  « ${words} »`;
 
-    // Descomposición Aditiva (sin spots con ceros a la izquierda ni ceros intermedios)
+    // Descomposición Aditiva
     const chipsContainer = document.getElementById("chipsContainer");
     chipsContainer.innerHTML = "";
 
     if (currentValue === 0) {
       chipsContainer.innerHTML = `
         <div class="chip simple">
-          <span class="chip-pos">U</span>
+          <span class="chip-pos">${colNames[0]}</span>
           <span class="chip-val">0</span>
         </div>
       `;
@@ -748,7 +819,7 @@
           if (val > 0) {
             activeItems.push({
               pos: colNames[i],
-              val: formatSpanishNumber(val),
+              val: formatNumber(val),
               isMil: isMilFlags[i]
             });
           }
@@ -773,7 +844,6 @@
       });
     }
 
-    // Comprobar reto activo
     checkChallengeAuto();
   }
 
@@ -782,17 +852,55 @@
     pulseTag(idx);
 
     const oldDigit = getDigit(idx);
+    const colFullNames = currentLang === "en" ? colFullNamesEN : colFullNamesES;
+
+    // MODO MANUAL: Gira exclusivamente esta rueda
+    if (isManualMode) {
+      let nextDigit = (oldDigit + dir + 10) % 10;
+      let diff = (nextDigit - oldDigit) * weights[idx];
+      currentValue += diff;
+
+      if (dir > 0 && oldDigit === 9) {
+        const dest = colFullNames[Math.min(5, idx + 1)];
+        const curr = colFullNames[idx];
+        const msg = currentLang === "en" 
+          ? `Completed 10 ${curr}! In Manual Mode, remember to add 1 to ${dest} yourself.`
+          : `¡Completaste 10 ${curr}! En modo manual, recuerda sumar 1 en ${dest}.`;
+        showBanner(msg, "manual");
+      } else if (dir < 0 && oldDigit === 0) {
+        const dest = colFullNames[Math.min(5, idx + 1)];
+        const curr = colFullNames[idx];
+        const msg = currentLang === "en" 
+          ? `Manual regrouping! In Manual Mode, remember to subtract 1 from ${dest}.`
+          : `¡Desagrupación manual! En modo manual, recuerda restar 1 a ${dest}.`;
+        showBanner(msg, "manual");
+      }
+
+      updateUI(true);
+      return;
+    }
+
+    // MODO AUTOMÁTICO: Acarreo en cascada normal
     let newVal = currentValue + dir * weights[idx];
     const maxVal = Math.pow(10, activeDigits) - 1;
 
     if (newVal > maxVal) newVal = newVal % (maxVal + 1);
     if (newVal < 0) newVal = maxVal - (Math.abs(newVal) - 1);
 
-    // Mensaje de acarreo pedagógico
     if (dir > 0 && oldDigit === 9) {
-      showBanner(`¡Genial! 10 ${colFullNames[idx]} se transforman en 1 ${colFullNames[Math.min(5, idx + 1)]}.`, true);
+      const dest = colFullNames[Math.min(5, idx + 1)];
+      const curr = colFullNames[idx];
+      const msg = currentLang === "en"
+        ? `10 ${curr} become 1 ${dest}!`
+        : `¡Genial! 10 ${curr} se transforman en 1 ${dest}.`;
+      showBanner(msg, "alert");
     } else if (dir < 0 && oldDigit === 0) {
-      showBanner(`¡Desagrupación! Se toma 1 ${colFullNames[Math.min(5, idx + 1)]} para obtener 10 ${colFullNames[idx]}.`, true);
+      const dest = colFullNames[Math.min(5, idx + 1)];
+      const curr = colFullNames[idx];
+      const msg = currentLang === "en"
+        ? `Regrouping! 1 ${dest} is traded for 10 ${curr}.`
+        : `¡Desagrupación! Se toma 1 ${dest} para obtener 10 ${curr}.`;
+      showBanner(msg, "alert");
     }
 
     currentValue = newVal;
@@ -807,13 +915,18 @@
     }
   }
 
-  function showBanner(msg, isAlert = false) {
+  function showBanner(msg, type = "normal") {
     const b = document.getElementById("bannerMsg");
     b.textContent = msg;
-    if (isAlert) {
-      b.classList.add("alert");
-      setTimeout(() => b.classList.remove("alert"), 3500);
-    }
+    b.className = "banner " + type;
+    setTimeout(() => {
+      if (b.textContent === msg) {
+        b.className = "banner";
+        b.textContent = isManualMode 
+          ? (currentLang === "en" ? "Manual Mode active: move each column yourself to complete regroupings!" : "Modo Manual activo: ¡mueve cada posición tú mismo para completar los acarreos!")
+          : (currentLang === "en" ? "Use the ▲ and ▼ arrows to see how values change!" : "¡Usa las flechas ▲ y ▼ para ver cómo cambian los valores!");
+      }
+    }, 4000);
   }
 
   function onWheelScroll(e, idx) {
@@ -840,9 +953,63 @@
     updateUI(true);
   }
 
+  function toggleMode() {
+    isManualMode = !isManualMode;
+    const btn = document.getElementById("btnMode");
+    if (isManualMode) {
+      btn.className = "btn-orange";
+      btn.textContent = currentLang === "en" ? "Mode: Manual" : "Modo: Manual";
+      showBanner(currentLang === "en" ? "Manual Mode active: columns do NOT add automatically!" : "Modo Manual activo: ¡las columnas NO se suman solas!", "manual");
+    } else {
+      btn.className = "";
+      btn.textContent = currentLang === "en" ? "Mode: Automatic" : "Modo: Automático";
+      showBanner(currentLang === "en" ? "Automatic Mode: columns carry over automatically." : "Modo Automático: los acarreos se suman solos.", "alert");
+    }
+  }
+
+  function toggleLanguage() {
+    currentLang = currentLang === "es" ? "en" : "es";
+    applyLanguageTexts();
+    updateUI(false);
+  }
+
+  function applyLanguageTexts() {
+    const isEn = currentLang === "en";
+    document.title = isEn ? "Mechanical Counter — Understanding Place Value" : "Contador Mecánico — Aprendiendo el Valor Posicional";
+    document.getElementById("btnLang").textContent = isEn ? "🌐 EN" : "🌐 ES";
+    document.getElementById("lblLevel").textContent = isEn ? "Level:" : "Nivel:";
+    document.getElementById("lvl3").textContent = isEn ? "3 Digits" : "3 Dígitos";
+    document.getElementById("lvl4").textContent = isEn ? "4 Digits" : "4 Dígitos";
+    document.getElementById("lvl6").textContent = isEn ? "6 Digits" : "6 Dígitos";
+    document.getElementById("btnAddCol").textContent = isEn ? "+ Column" : "+ Columna";
+    document.getElementById("btnMode").textContent = isManualMode 
+      ? (isEn ? "Mode: Manual" : "Modo: Manual")
+      : (isEn ? "Mode: Automatic" : "Modo: Automático");
+    document.getElementById("btnZeros").textContent = hideLeadingZeros 
+      ? (isEn ? "Leading Zeros: Hidden" : "Ceros Izq: Ocultos")
+      : (isEn ? "Leading Zeros: Visible" : "Ceros Izq: Visibles");
+    document.getElementById("btnRandom").textContent = isEn ? "🎲 Surprise Number" : "🎲 Número Sorpresa";
+    document.getElementById("btnReset").textContent = isEn ? "🔄 Reset to 0" : "🔄 Poner a 0";
+    document.getElementById("btnSound").textContent = soundEnabled 
+      ? (isEn ? "🔊 Sound: ON" : "🔊 Sonido: ON")
+      : (isEn ? "🔇 Sound: OFF" : "🔇 Sonido: OFF");
+    document.getElementById("btnChallenges").textContent = isEn ? "🎮 Challenges: ON" : "🎮 Retos: ON";
+    document.getElementById("lblBreakdownTitle").textContent = isEn ? "✨ Place Value and Expanded Form" : "✨ Valor Posicional y Descomposición";
+    document.getElementById("btnSpeak").textContent = isEn ? "🔊 Listen how to read" : "🔊 Escuchar cómo se lee";
+    document.getElementById("lblChallengeTitle").textContent = isEn ? "🎮 Math Challenges" : "🎮 Modo Desafíos Matemáticos";
+    document.getElementById("btnNewChallenge").textContent = isEn ? "🎲 New Challenge" : "🎲 Nuevo Desafío";
+    document.getElementById("btnCheckChallenge").textContent = isEn ? "✅ Check" : "✅ Comprobar";
+    document.getElementById("starsCount").textContent = isEn ? `⭐ ${stars} Stars` : `⭐ ${stars} Estrellas`;
+    document.getElementById("bannerMsg").textContent = isManualMode
+      ? (isEn ? "Manual Mode active: move each column yourself to complete regroupings!" : "Modo Manual activo: ¡mueve cada posición tú mismo para completar los acarreos!")
+      : (isEn ? "Use the ▲ and ▼ arrows to see how values change!" : "¡Usa las flechas ▲ y ▼ para ver cómo cambian los valores!");
+  }
+
   function toggleZeros() {
     hideLeadingZeros = !hideLeadingZeros;
-    document.getElementById("btnZeros").textContent = hideLeadingZeros ? "Ceros Izq: Ocultos" : "Ceros Izq: Visibles";
+    document.getElementById("btnZeros").textContent = hideLeadingZeros 
+      ? (currentLang === "en" ? "Leading Zeros: Hidden" : "Ceros Izq: Ocultos")
+      : (currentLang === "en" ? "Leading Zeros: Visible" : "Ceros Izq: Visibles");
     updateUI(true);
   }
 
@@ -862,45 +1029,55 @@
 
   function toggleSound() {
     soundEnabled = !soundEnabled;
-    document.getElementById("btnSound").textContent = soundEnabled ? "🔊 Sonido: ON" : "🔇 Sonido: OFF";
+    document.getElementById("btnSound").textContent = soundEnabled 
+      ? (currentLang === "en" ? "🔊 Sound: ON" : "🔊 Sonido: ON")
+      : (currentLang === "en" ? "🔇 Sound: OFF" : "🔇 Sonido: OFF");
   }
 
   function toggleChallenges() {
     const cp = document.getElementById("challengePanel");
     const vis = cp.style.display !== "none";
     cp.style.display = vis ? "none" : "flex";
-    document.getElementById("btnChallenges").textContent = vis ? "🎮 Retos: OFF" : "🎮 Retos: ON";
+    document.getElementById("btnChallenges").textContent = vis 
+      ? (currentLang === "en" ? "🎮 Challenges: OFF" : "🎮 Retos: OFF")
+      : (currentLang === "en" ? "🎮 Challenges: ON" : "🎮 Retos: ON");
   }
 
-  // Síntesis de voz natural usando Web Speech API (Voz nativa de Siri en macOS!)
   function speakCurrentNumber() {
     if (!("speechSynthesis" in window)) return;
     window.speechSynthesis.cancel();
-    const words = numeroAPalabras(currentValue);
+    const words = numberToWords(currentValue);
     const utter = new SpeechSynthesisUtterance(words);
-    utter.lang = "es-ES";
+    utter.lang = currentLang === "en" ? "en-US" : "es-ES";
     utter.rate = 0.95;
 
-    // Buscar la mejor voz natural en español
     const voices = window.speechSynthesis.getVoices();
-    const naturalVoice = voices.find(v => (v.lang.startsWith("es") && (v.name.includes("Mónica") || v.name.includes("Paulina") || v.name.includes("Jorge") || v.name.includes("Google") || v.name.includes("Natural"))));
-    if (naturalVoice) utter.voice = naturalVoice;
+    let preferred = null;
+    if (currentLang === "en") {
+      preferred = voices.find(v => v.lang.startsWith("en") && (v.name.includes("Samantha") || v.name.includes("Alex") || v.name.includes("Natural") || v.name.includes("Google")));
+    } else {
+      preferred = voices.find(v => v.lang.startsWith("es") && (v.name.includes("Mónica") || v.name.includes("Paulina") || v.name.includes("Jorge") || v.name.includes("Google")));
+    }
+    if (preferred) utter.voice = preferred;
 
     window.speechSynthesis.speak(utter);
   }
 
-  // Modo Retos
   function newChallenge() {
     const types = ["form", "digit", "add"];
     const type = types[Math.floor(Math.random() * types.length)];
     const maxVal = Math.pow(10, activeDigits) - 1;
+    const colFullNames = currentLang === "en" ? colFullNamesEN : colFullNamesES;
+    const colNames = currentLang === "en" ? colNamesEN : colNamesES;
 
     if (type === "form") {
       const target = Math.floor(Math.random() * maxVal) + 1;
       currentChallenge = {
         type: "target",
         value: target,
-        text: `🎯 Misión: ¡Gira los cilindros hasta formar el número <b>${formatSpanishNumber(target)}</b>!`
+        text: currentLang === "en" 
+          ? `🎯 Mission: Roll the wheels to make <b>${formatNumber(target)}</b>!`
+          : `🎯 Misión: ¡Gira los cilindros hasta formar el número <b>${formatNumber(target)}</b>!`
       };
     } else if (type === "digit") {
       const idx = Math.floor(Math.random() * activeDigits);
@@ -909,7 +1086,9 @@
         type: "digit",
         idx: idx,
         digit: targetDigit,
-        text: `🎯 Misión: Haz que la cifra de las <b>${colFullNames[idx]} (${colNames[idx]})</b> sea igual a <b>${targetDigit}</b>.`
+        text: currentLang === "en"
+          ? `🎯 Mission: Set the <b>${colFullNames[idx]} (${colNames[idx]})</b> wheel to <b>${targetDigit}</b>.`
+          : `🎯 Misión: Haz que la cifra de las <b>${colFullNames[idx]} (${colNames[idx]})</b> sea igual a <b>${targetDigit}</b>.`
       };
     } else {
       const idx = Math.floor(Math.random() * Math.min(4, activeDigits));
@@ -918,7 +1097,9 @@
       currentChallenge = {
         type: "target",
         value: target,
-        text: `➕ Misión: Al número actual, ¡suma <b>${amount} ${colFullNames[idx].toLowerCase()}</b>!`
+        text: currentLang === "en"
+          ? `➕ Mission: Add <b>${amount} ${colFullNames[idx].toLowerCase()}</b> to the current number!`
+          : `➕ Misión: Al número actual, ¡suma <b>${amount} ${colFullNames[idx].toLowerCase()}</b>!`
       };
     }
 
@@ -934,9 +1115,11 @@
 
     if (solved) {
       stars++;
-      document.getElementById("starsCount").textContent = `⭐ ${stars} ${stars === 1 ? "Estrella" : "Estrellas"}`;
+      document.getElementById("starsCount").textContent = currentLang === "en"
+        ? `⭐ ${stars} ${stars === 1 ? "Star" : "Stars"}`
+        : `⭐ ${stars} ${stars === 1 ? "Estrella" : "Estrellas"}`;
       const fb = document.getElementById("challengeFeedback");
-      fb.textContent = "🎉 ¡EXCELENTE! ¡Completado!";
+      fb.textContent = currentLang === "en" ? "🎉 EXCELLENT! Completed!" : "🎉 ¡EXCELENTE! ¡Completado!";
       fb.style.color = "#2F855A";
       playChimeSound();
       currentChallenge = null;
@@ -950,11 +1133,10 @@
       return;
     }
     const fb = document.getElementById("challengeFeedback");
-    fb.textContent = "Casi... ¡Sigue probando!";
+    fb.textContent = currentLang === "en" ? "Almost... keep trying!" : "Casi... ¡Sigue probando!";
     fb.style.color = "#C53030";
   }
 
-  // Inicializar
   initWheels();
   updateUI(false);
   window.speechSynthesis.onvoiceschanged = () => {};

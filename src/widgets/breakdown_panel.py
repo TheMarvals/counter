@@ -1,9 +1,8 @@
 """
 Panel pedagógico de desglose del valor posicional para niños:
-- Descomposición aditiva visual sin ceros a la izquierda ni ceros innecesarios
-- Signos de puntuación correctos en las cifras (punto de miles)
-- Lectura en palabras en español
-- Botón de audio para escuchar la pronunciación (compatible con Linux y macOS)
+- Descomposición aditiva bilingüe (Español / Inglés).
+- Signos de puntuación correctos según el idioma (punto o coma).
+- Lectura y voz en español o inglés.
 """
 
 from PyQt6.QtCore import Qt
@@ -13,7 +12,7 @@ from PyQt6.QtWidgets import (
 )
 
 from src.model.number_words import (
-    numero_a_palabras, descomposicion_aditiva, formatear_cifra_es
+    numero_a_palabras, descomposicion_aditiva, formatear_cifra
 )
 from src.audio.sound_player import SoundPlayer
 
@@ -81,10 +80,10 @@ class BreakdownPanel(QFrame):
 
         # 1. Título y botón de pronunciación
         top_row = QHBoxLayout()
-        title_label = QLabel("Valor Posicional y Descomposición")
-        title_label.setFont(QFont("sans-serif", 13, QFont.Weight.Bold))
-        title_label.setStyleSheet("color: #2D3748;")
-        top_row.addWidget(title_label)
+        self.title_label = QLabel("Valor Posicional y Descomposición")
+        self.title_label.setFont(QFont("sans-serif", 13, QFont.Weight.Bold))
+        self.title_label.setStyleSheet("color: #2D3748;")
+        top_row.addWidget(self.title_label)
 
         top_row.addStretch()
 
@@ -124,7 +123,7 @@ class BreakdownPanel(QFrame):
         """)
         layout.addWidget(self.words_label)
 
-        # 3. Fichas de descomposición aditiva (sin ceros innecesarios)
+        # 3. Fichas de descomposición aditiva
         self.chips_container = QWidget()
         self.chips_layout = QHBoxLayout(self.chips_container)
         self.chips_layout.setContentsMargins(0, 0, 0, 0)
@@ -145,13 +144,32 @@ class BreakdownPanel(QFrame):
 
         self.model.valueChanged.connect(self.update_display)
         self.model.carryEvent.connect(self._on_carry_event)
+        self.model.displayConfigChanged.connect(self._on_config_changed)
 
         self.update_display(self.model.value, self.model.get_digits(), {})
 
-    def update_display(self, new_val: int, digits: list[int], info: dict):
-        words = numero_a_palabras(new_val)
-        # Signos de puntuación correctos con punto de miles
-        formatted_num = formatear_cifra_es(new_val)
+    def _on_config_changed(self):
+        lang = self.model.lang
+        if lang == "en":
+            self.title_label.setText("Place Value and Expanded Form")
+            self.speak_btn.setText("🔊 Listen how to read")
+            if self.model.mode == "manual":
+                self.pedagogy_banner.setText("Manual Mode active: move each column yourself to complete regroupings!")
+            else:
+                self.pedagogy_banner.setText("Use the ▲ and ▼ arrows to see how values change!")
+        else:
+            self.title_label.setText("Valor Posicional y Descomposición")
+            self.speak_btn.setText("🔊 Escuchar cómo se lee")
+            if self.model.mode == "manual":
+                self.pedagogy_banner.setText("Modo Manual activo: ¡mueve cada posición tú mismo para completar los acarreos!")
+            else:
+                self.pedagogy_banner.setText("¡Usa las flechas ▲ y ▼ para ver cómo cambian los valores!")
+        self.update_display(self.model.value, self.model.get_digits(), {})
+
+    def update_display(self, new_val: int, digits: list[int], info: dict = None):
+        lang = self.model.lang
+        words = numero_a_palabras(new_val, lang=lang)
+        formatted_num = formatear_cifra(new_val, lang=lang)
         self.words_label.setText(f"<b>{formatted_num}</b>  —  « {words} »")
 
         while self.chips_layout.count():
@@ -160,8 +178,7 @@ class BreakdownPanel(QFrame):
             if w:
                 w.deleteLater()
 
-        # Descomposición aditiva: omitir ceros (desaparecen los spots con cero)
-        decomp = descomposicion_aditiva(new_val, self.model.active_digits, omit_zeros=True)
+        decomp = descomposicion_aditiva(new_val, self.model.active_digits, omit_zeros=True, lang=lang)
         for i, item in enumerate(decomp):
             chip = ValueChip(
                 pos_name=item["pos"],
@@ -188,5 +205,5 @@ class BreakdownPanel(QFrame):
         """)
 
     def _on_speak_clicked(self):
-        words = numero_a_palabras(self.model.value)
-        self.sound_player.speak_text(words)
+        words = numero_a_palabras(self.model.value, lang=self.model.lang)
+        self.sound_player.speak_text(words, lang=self.model.lang)

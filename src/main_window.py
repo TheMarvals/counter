@@ -1,6 +1,10 @@
 """
 Ventana Principal de la Aplicación del Contador para Niños.
 Multiplataforma (Linux / macOS / Windows).
+Soporta:
+- Modo Automático y Modo Manual pedagógico.
+- Idiomas: Español e Inglés.
+- Ceros a la izquierda ocultos.
 """
 
 import random
@@ -21,8 +25,7 @@ from src.audio.sound_player import SoundPlayer
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("Contador Mecánico — Aprendiendo el Valor Posicional")
-        self.resize(940, 860)
+        self.resize(960, 880)
         self.setMinimumSize(840, 740)
 
         self.model = CounterModel(initial_value=103245, max_digits=6)
@@ -45,11 +48,11 @@ class MainWindow(QMainWindow):
         main_layout.setContentsMargins(18, 14, 18, 14)
         main_layout.setSpacing(12)
 
-        # 1. Barra superior de navegación y controles (2 filas ordenadas)
+        # 1. Barra superior
         top_bar = self._create_top_bar()
         main_layout.addWidget(top_bar)
 
-        # 2. Área desplazable para contener el odómetro y los paneles pedagógicos
+        # 2. Área desplazable
         scroll = QScrollArea()
         scroll.setWidgetResizable(True)
         scroll_content = QWidget()
@@ -58,20 +61,20 @@ class MainWindow(QMainWindow):
         scroll_layout.setSpacing(16)
         scroll_layout.setAlignment(Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignHCenter)
 
-        # Odómetro central
         self.odometer = OdometerDisplay(self.model)
         scroll_layout.addWidget(self.odometer, alignment=Qt.AlignmentFlag.AlignHCenter)
 
-        # Panel de descomposición aditiva y palabras
         self.breakdown_panel = BreakdownPanel(self.model)
         scroll_layout.addWidget(self.breakdown_panel)
 
-        # Panel de retos pedagógicos
         self.challenge_panel = ChallengePanel(self.model)
         scroll_layout.addWidget(self.challenge_panel)
 
         scroll.setWidget(scroll_content)
         main_layout.addWidget(scroll)
+
+        self.model.displayConfigChanged.connect(self._on_display_config_changed)
+        self._update_ui_texts()
 
     def _create_top_bar(self) -> QWidget:
         bar = QFrame()
@@ -87,21 +90,21 @@ class MainWindow(QMainWindow):
                 font-weight: bold;
                 font-size: 11px;
                 border-radius: 6px;
-                padding: 6px 14px;
+                padding: 6px 12px;
             }
         """)
         layout = QVBoxLayout(bar)
         layout.setContentsMargins(10, 8, 10, 8)
         layout.setSpacing(8)
 
-        # Fila 1: Nivel y Configuración de Ceros
+        # Fila 1: Nivel, Modo (Auto/Manual) e Idioma (ES/EN)
         row1 = QHBoxLayout()
-        row1.setSpacing(10)
+        row1.setSpacing(8)
 
-        lvl_label = QLabel("Nivel:")
-        lvl_label.setFont(QFont("sans-serif", 11, QFont.Weight.Bold))
-        lvl_label.setStyleSheet("color: #4A5568;")
-        row1.addWidget(lvl_label)
+        self.lvl_label = QLabel("Nivel:")
+        self.lvl_label.setFont(QFont("sans-serif", 11, QFont.Weight.Bold))
+        self.lvl_label.setStyleSheet("color: #4A5568;")
+        row1.addWidget(self.lvl_label)
 
         self.btn_lvl3 = QPushButton("3 Dígitos")
         self.btn_lvl4 = QPushButton("4 Dígitos")
@@ -134,8 +137,6 @@ class MainWindow(QMainWindow):
             """)
             row1.addWidget(btn)
 
-        row1.addSpacing(8)
-
         self.btn_add_col = QPushButton("+ Columna")
         self.btn_add_col.setCursor(Qt.CursorShape.PointingHandCursor)
         self.btn_add_col.setStyleSheet("""
@@ -151,6 +152,40 @@ class MainWindow(QMainWindow):
 
         row1.addStretch()
 
+        # Botón Modo Auto / Manual
+        self.btn_mode = QPushButton("Modo: Automático")
+        self.btn_mode.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.btn_mode.setStyleSheet("""
+            QPushButton {
+                background-color: #EDF2F7;
+                color: #2D3748;
+                border: 1px solid #CBD5E0;
+            }
+            QPushButton:hover { background-color: #E2E8F0; }
+        """)
+        self.btn_mode.clicked.connect(self._on_toggle_mode)
+        row1.addWidget(self.btn_mode)
+
+        # Botón Idioma
+        self.btn_lang = QPushButton("🌐 ES")
+        self.btn_lang.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.btn_lang.setStyleSheet("""
+            QPushButton {
+                background-color: #FEFCBF;
+                color: #744210;
+                border: 1px solid #D69E2E;
+            }
+            QPushButton:hover { background-color: #FAF089; }
+        """)
+        self.btn_lang.clicked.connect(self._on_toggle_lang)
+        row1.addWidget(self.btn_lang)
+
+        layout.addLayout(row1)
+
+        # Fila 2: Ceros a la izquierda, Sorpresa, Reset, Sonido y Retos
+        row2 = QHBoxLayout()
+        row2.setSpacing(8)
+
         self.btn_zeros = QPushButton("Ceros Izq: Ocultos")
         self.btn_zeros.setCursor(Qt.CursorShape.PointingHandCursor)
         self.btn_zeros.setStyleSheet("""
@@ -162,17 +197,11 @@ class MainWindow(QMainWindow):
             QPushButton:hover { background-color: #CBD5E0; }
         """)
         self.btn_zeros.clicked.connect(self._on_toggle_zeros)
-        row1.addWidget(self.btn_zeros)
+        row2.addWidget(self.btn_zeros)
 
-        layout.addLayout(row1)
-
-        # Fila 2: Acciones interactivas, Sonido y Retos
-        row2 = QHBoxLayout()
-        row2.setSpacing(10)
-
-        btn_random = QPushButton("Número Sorpresa")
-        btn_random.setCursor(Qt.CursorShape.PointingHandCursor)
-        btn_random.setStyleSheet("""
+        self.btn_random = QPushButton("Número Sorpresa")
+        self.btn_random.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.btn_random.setStyleSheet("""
             QPushButton {
                 background-color: #FEFCBF;
                 color: #744210;
@@ -180,12 +209,12 @@ class MainWindow(QMainWindow):
             }
             QPushButton:hover { background-color: #FAF089; }
         """)
-        btn_random.clicked.connect(self._on_random_clicked)
-        row2.addWidget(btn_random)
+        self.btn_random.clicked.connect(self._on_random_clicked)
+        row2.addWidget(self.btn_random)
 
-        btn_reset = QPushButton("Poner a 0")
-        btn_reset.setCursor(Qt.CursorShape.PointingHandCursor)
-        btn_reset.setStyleSheet("""
+        self.btn_reset = QPushButton("Poner a 0")
+        self.btn_reset.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.btn_reset.setStyleSheet("""
             QPushButton {
                 background-color: #FED7D7;
                 color: #9B2C2C;
@@ -193,8 +222,8 @@ class MainWindow(QMainWindow):
             }
             QPushButton:hover { background-color: #FEB2B2; }
         """)
-        btn_reset.clicked.connect(self._on_reset_clicked)
-        row2.addWidget(btn_reset)
+        self.btn_reset.clicked.connect(self._on_reset_clicked)
+        row2.addWidget(self.btn_reset)
 
         row2.addStretch()
 
@@ -228,6 +257,52 @@ class MainWindow(QMainWindow):
 
         return bar
 
+    def _on_display_config_changed(self):
+        self._update_ui_texts()
+
+    def _update_ui_texts(self):
+        lang = self.model.lang
+        mode = self.model.mode
+
+        if lang == "en":
+            self.setWindowTitle("Mechanical Counter — Understanding Place Value")
+            self.lvl_label.setText("Level:")
+            self.btn_lvl3.setText("3 Digits")
+            self.btn_lvl4.setText("4 Digits")
+            self.btn_lvl6.setText("6 Digits")
+            self.btn_add_col.setText("+ Column")
+            self.btn_lang.setText("🌐 EN (English)")
+            self.btn_random.setText("Surprise Number")
+            self.btn_reset.setText("Reset to 0")
+            self.btn_sound.setText("Sound: OFF" if self.sound_player.muted else "Sound: ON")
+            self.btn_challenges.setText("Challenges: ON" if self.challenge_panel.isVisible() else "Challenges: OFF")
+            self.btn_zeros.setText("Leading Zeros: Hidden" if self.model.hide_leading_zeros else "Leading Zeros: Visible")
+            if mode == "manual":
+                self.btn_mode.setText("Mode: Manual (No auto-carry)")
+                self.btn_mode.setStyleSheet("background-color: #FEEBC8; color: #7B341E; border: 1px solid #DD6B20;")
+            else:
+                self.btn_mode.setText("Mode: Automatic")
+                self.btn_mode.setStyleSheet("background-color: #EDF2F7; color: #2D3748; border: 1px solid #CBD5E0;")
+        else:
+            self.setWindowTitle("Contador Mecánico — Aprendiendo el Valor Posicional")
+            self.lvl_label.setText("Nivel:")
+            self.btn_lvl3.setText("3 Dígitos")
+            self.btn_lvl4.setText("4 Dígitos")
+            self.btn_lvl6.setText("6 Dígitos")
+            self.btn_add_col.setText("+ Columna")
+            self.btn_lang.setText("🌐 ES (Español)")
+            self.btn_random.setText("Número Sorpresa")
+            self.btn_reset.setText("Poner a 0")
+            self.btn_sound.setText("Sonido: OFF" if self.sound_player.muted else "Sonido: ON")
+            self.btn_challenges.setText("Retos: ON" if self.challenge_panel.isVisible() else "Retos: OFF")
+            self.btn_zeros.setText("Ceros Izq: Ocultos" if self.model.hide_leading_zeros else "Ceros Izq: Visibles")
+            if mode == "manual":
+                self.btn_mode.setText("Modo: Manual (Sin auto-suma)")
+                self.btn_mode.setStyleSheet("background-color: #FEEBC8; color: #7B341E; border: 1px solid #DD6B20;")
+            else:
+                self.btn_mode.setText("Modo: Automático")
+                self.btn_mode.setStyleSheet("background-color: #EDF2F7; color: #2D3748; border: 1px solid #CBD5E0;")
+
     def _on_level_changed(self, count: int):
         self.model.active_digits = count
 
@@ -235,12 +310,16 @@ class MainWindow(QMainWindow):
         self.sound_player.play_click()
         self.model.activate_next_column()
 
+    def _on_toggle_mode(self):
+        self.sound_player.play_click()
+        self.model.mode = "manual" if self.model.mode == "auto" else "auto"
+
+    def _on_toggle_lang(self):
+        self.sound_player.play_click()
+        self.model.lang = "en" if self.model.lang == "es" else "es"
+
     def _on_toggle_zeros(self):
         self.model.hide_leading_zeros = not self.model.hide_leading_zeros
-        if self.model.hide_leading_zeros:
-            self.btn_zeros.setText("Ceros Izq: Ocultos")
-        else:
-            self.btn_zeros.setText("Ceros Izq: Visibles")
 
     def _on_reset_clicked(self):
         self.sound_player.play_click()
@@ -256,14 +335,9 @@ class MainWindow(QMainWindow):
 
     def _on_sound_toggle(self):
         self.sound_player.muted = not self.sound_player.muted
-        if self.sound_player.muted:
-            self.btn_sound.setText("Sonido: OFF")
-            self.btn_sound.setStyleSheet("background-color: #FED7D7; color: #9B2C2C;")
-        else:
-            self.btn_sound.setText("Sonido: ON")
-            self.btn_sound.setStyleSheet("background-color: #E2E8F0; color: #2D3748;")
+        self._update_ui_texts()
 
     def _on_challenge_toggle(self):
         vis = not self.challenge_panel.isVisible()
         self.challenge_panel.setVisible(vis)
-        self.btn_challenges.setText("Retos: ON" if vis else "Retos: OFF")
+        self._update_ui_texts()

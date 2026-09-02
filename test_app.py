@@ -22,7 +22,7 @@ from PyQt6.QtCore import QSize
 
 from src.model.counter_model import CounterModel
 from src.model.number_words import (
-    numero_a_palabras, descomposicion_aditiva, formatear_cifra_es
+    numero_a_palabras, descomposicion_aditiva, formatear_cifra, formatear_cifra_es
 )
 from src.main_window import MainWindow
 
@@ -120,6 +120,24 @@ class TestGuiRendering(unittest.TestCase):
         saved = image.save(out_path)
         self.assertTrue(saved)
         print(f"Screenshot con ceros a la izquierda ocultos guardado en: {out_path}")
+
+    def test_manual_mode_no_autocarry(self):
+        m = CounterModel(initial_value=9, max_digits=6)
+        m.mode = "manual"
+        # En modo manual, incrementar U desde 9 cambia U a 0 sin incrementar D automaticamente
+        m.increment_column(0)
+        self.assertEqual(m.value, 0)
+        self.assertEqual(m.get_digit_at_pos(0), 0)
+        self.assertEqual(m.get_digit_at_pos(1), 0)
+
+        # Al mover D manualmente de 0 pasa a 1, completando el acarreo por el nino
+        m.increment_column(1)
+        self.assertEqual(m.value, 10)
+        self.assertEqual(m.get_digit_at_pos(1), 1)
+
+    def test_english_words_and_punctuation(self):
+        self.assertEqual(formatear_cifra(103245, lang="en"), "103,245")
+        self.assertEqual(numero_a_palabras(103245, lang="en"), "One hundred three thousand two hundred forty-five")
 
 
 if __name__ == "__main__":

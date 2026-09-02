@@ -1,15 +1,13 @@
 """
 Conjunto completo del odómetro:
-- Encabezados: CM, DM, UM (Naranja) y C, D, U (Blanco)
+- Encabezados bilingües: CM..U (ES) o HTh..O (EN)
 - Flechas superiores (▲) e inferiores (▼)
-- Ocultación automática de ceros a la izquierda (desaparición de spots inactivos)
-- Separador de miles correcto (punto '.' entre UM y C cuando la cifra >= 1.000)
-- Sin círculo amarillo
-- Compatibilidad multiplataforma (Linux / macOS / Windows)
+- Soporte para Modo Automático y Modo Manual
+- Separador de miles correcto: punto '.' en español o coma ',' en inglés cuando >= 1.000
 """
 
 from PyQt6.QtCore import Qt, pyqtSignal, QRectF
-from PyQt6.QtGui import QPainter, QColor, QBrush
+from PyQt6.QtGui import QPainter, QColor, QBrush, QFont
 from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QFrame
 )
@@ -43,8 +41,7 @@ class DrumFrame(QFrame):
     def paintEvent(self, event):
         super().paintEvent(event)
 
-        # Separador de miles '.' limpio entre UM (índice 2) y C (índice 3)
-        # solo cuando el número tiene miles (>= 1.000) y ambas columnas están visibles
+        # Separador de miles entre UM (índice 2) y C (índice 3) cuando >= 1.000
         if self.model.value >= 1000 and len(self.wheels) >= 4:
             um_wheel = self.wheels[2]
             c_wheel = self.wheels[3]
@@ -58,12 +55,20 @@ class DrumFrame(QFrame):
                 painter = QPainter(self)
                 painter.setRenderHint(QPainter.RenderHint.Antialiasing)
 
-                # Punto de miles '.' en la línea de lectura central
-                dot_size = 6.0
-                point_rect = QRectF(mid_x - dot_size * 0.5, mid_y + 16.0, dot_size, dot_size)
-                painter.setPen(Qt.PenStyle.NoPen)
-                painter.setBrush(QColor(230, 230, 235, 230))
-                painter.drawEllipse(point_rect)
+                # Signo de puntuación según el idioma
+                if self.model.lang == "en":
+                    # Coma en inglés ','
+                    font = QFont("sans-serif", 20, QFont.Weight.Bold)
+                    painter.setFont(font)
+                    painter.setPen(QColor(230, 230, 235, 230))
+                    painter.drawText(QRectF(mid_x - 6, mid_y + 4, 12, 20), Qt.AlignmentFlag.AlignCenter, ",")
+                else:
+                    # Punto en español '.'
+                    dot_size = 6.0
+                    point_rect = QRectF(mid_x - dot_size * 0.5, mid_y + 16.0, dot_size, dot_size)
+                    painter.setPen(Qt.PenStyle.NoPen)
+                    painter.setBrush(QColor(230, 230, 235, 230))
+                    painter.drawEllipse(point_rect)
 
 
 class FloorShadow(QWidget):
@@ -120,20 +125,19 @@ class OdometerDisplay(QWidget):
         self.up_buttons_layout.setSpacing(6)
         self.up_buttons = []
 
-        # 3. Tambores mecánicos (CM, DM, UM, C, D, U -> 5, 4, 3, 2, 1, 0)
+        # 3. Tambores mecánicos (índices visuales 0 a 5 -> modelos 5, 4, 3, 2, 1, 0)
         self.wheels = []
-        self.pos_names = ["CM", "DM", "UM", "C", "D", "U"]
         self.model_indices = [5, 4, 3, 2, 1, 0]
 
-        for i, (name, m_idx) in enumerate(zip(self.pos_names, self.model_indices)):
+        for visual_idx, m_idx in enumerate(self.model_indices):
             btn_up = TriangleButton(direction="up")
-            btn_up.clicked.connect(lambda checked, idx=m_idx, n=name: self._on_up_clicked(idx, n))
+            btn_up.clicked.connect(lambda checked, idx=m_idx, v_idx=visual_idx: self._on_up_clicked(idx, v_idx))
             self.up_buttons.append(btn_up)
             self.up_buttons_layout.addWidget(btn_up)
 
-            wheel = OdometerWheel(pos_name=name)
-            wheel.incrementRequested.connect(lambda idx=m_idx, n=name: self._on_up_clicked(idx, n))
-            wheel.decrementRequested.connect(lambda idx=m_idx, n=name: self._on_down_clicked(idx, n))
+            wheel = OdometerWheel()
+            wheel.incrementRequested.connect(lambda idx=m_idx, v_idx=visual_idx: self._on_up_clicked(idx, v_idx))
+            wheel.decrementRequested.connect(lambda idx=m_idx, v_idx=visual_idx: self._on_down_clicked(idx, v_idx))
             self.wheels.append(wheel)
 
         main_layout.addLayout(self.up_buttons_layout)
@@ -148,9 +152,9 @@ class OdometerDisplay(QWidget):
         self.down_buttons_layout.setSpacing(6)
         self.down_buttons = []
 
-        for name, m_idx in zip(self.pos_names, self.model_indices):
+        for visual_idx, m_idx in enumerate(self.model_indices):
             btn_down = TriangleButton(direction="down")
-            btn_down.clicked.connect(lambda checked, idx=m_idx, n=name: self._on_down_clicked(idx, n))
+            btn_down.clicked.connect(lambda checked, idx=m_idx, v_idx=visual_idx: self._on_down_clicked(idx, v_idx))
             self.down_buttons.append(btn_down)
             self.down_buttons_layout.addWidget(btn_down)
 
@@ -161,20 +165,20 @@ class OdometerDisplay(QWidget):
         main_layout.addWidget(self.floor_shadow)
 
         self.model.valueChanged.connect(self._on_model_value_changed)
-        self.model.displayConfigChanged.connect(self._update_column_visibility)
+        self.model.displayConfigChanged.connect(self._on_display_config_changed)
 
         self._sync_digits(animated=False)
         self._update_column_visibility()
 
-    def _on_up_clicked(self, pos_idx: int, col_name: str):
+    def _on_up_clicked(self, pos_idx: int, visual_idx: int):
         self.sound_player.play_click()
-        self.header_row.pulse_column(col_name)
+        self.header_row.pulse_index(visual_idx)
         self.columnIncremented.emit(pos_idx)
         self.model.increment_column(pos_idx)
 
-    def _on_down_clicked(self, pos_idx: int, col_name: str):
+    def _on_down_clicked(self, pos_idx: int, visual_idx: int):
         self.sound_player.play_click()
-        self.header_row.pulse_column(col_name)
+        self.header_row.pulse_index(visual_idx)
         self.columnDecremented.emit(pos_idx)
         self.model.decrement_column(pos_idx)
 
@@ -188,6 +192,11 @@ class OdometerDisplay(QWidget):
         for i, digit in enumerate(digits):
             self.wheels[i].set_digit(digit, animated=animated, direction=direction)
 
+        self._update_column_visibility()
+        self.drum_frame.update()
+
+    def _on_display_config_changed(self):
+        self.header_row.update_language(self.model.lang)
         self._update_column_visibility()
         self.drum_frame.update()
 
@@ -216,9 +225,6 @@ class OdometerDisplay(QWidget):
             self.wheels[i].setVisible(is_visible)
             self.up_buttons[i].setVisible(is_visible)
             self.down_buttons[i].setVisible(is_visible)
-
-            col_name = self.pos_names[i]
-            if col_name in self.header_row.labels:
-                self.header_row.labels[col_name].setVisible(is_visible)
+            self.header_row.tags[i].setVisible(is_visible)
 
         self.drum_frame.update()
