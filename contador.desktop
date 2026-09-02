@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Contador de Unidades
+Comment=Contador pedagógico de valor posicional para niños
+Exec=python3 /home/marval/Proyects/counter/main.py
+Path=/home/marval/Proyects/counter
+Terminal=false
+Type=Application
+Categories=Education;Math;
+Icon=accessories-calculator

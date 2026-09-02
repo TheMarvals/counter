@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+DIR="$(cd "$(dirname "$0")/../../.." && pwd)"
+
+# Si existe ContadorDeUnidades.html, abrirlo con Safari / navegador por defecto en macOS
+if [ -f "$DIR/ContadorDeUnidades.html" ]; then
+    open "$DIR/ContadorDeUnidades.html"
+elif command -v python3 >/dev/null 2>&1; then
+    exec python3 "$DIR/main.py"
+fi
