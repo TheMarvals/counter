@@ -402,6 +402,26 @@
       align-items: center;
       gap: 10px;
     }
+    .app-footer {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 12px 0 6px 0;
+      font-size: 13px;
+      font-weight: 600;
+      color: #718096;
+    }
+    .app-footer a {
+      color: #165E7D;
+      text-decoration: none;
+      font-weight: 800;
+      transition: color 0.15s ease;
+      margin-left: 4px;
+    }
+    .app-footer a:hover {
+      color: #E35E28;
+      text-decoration: underline;
+    }
     @media (max-width: 650px) {
       .odometer-wrapper {
         transform: scale(0.78);
@@ -593,6 +613,11 @@
       <span id="challengeFeedback" style="font-weight: 800; margin-left: 10px;"></span>
     </div>
   </div>
+
+  <!-- Footer -->
+  <footer class="app-footer">
+    <span>Powered by <a href="https://thelaunchpad.help" target="_blank" rel="noopener noreferrer">TheMarvals</a></span>
+  </footer>
 
 </div>
 

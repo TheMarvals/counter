@@ -73,6 +73,17 @@ class MainWindow(QMainWindow):
         scroll.setWidget(scroll_content)
         main_layout.addWidget(scroll)
 
+        # 3. Footer
+        footer_layout = QHBoxLayout()
+        footer_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        footer_layout.setContentsMargins(0, 4, 0, 2)
+        footer_label = QLabel('Powered by <a href="https://thelaunchpad.help" style="color: #165E7D; text-decoration: none; font-weight: bold;">TheMarvals</a>')
+        footer_label.setOpenExternalLinks(True)
+        footer_label.setFont(QFont("sans-serif", 10))
+        footer_label.setStyleSheet("color: #718096;")
+        footer_layout.addWidget(footer_label)
+        main_layout.addLayout(footer_layout)
+
         self.model.displayConfigChanged.connect(self._on_display_config_changed)
         self._update_ui_texts()
 
