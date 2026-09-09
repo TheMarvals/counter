@@ -38,6 +38,9 @@
       align-items: center;
       min-height: 100vh;
       padding: 16px;
+      -webkit-tap-highlight-color: transparent;
+      overflow-x: hidden;
+      width: 100%;
     }
     .container {
       max-width: 900px;
@@ -45,19 +48,34 @@
       display: flex;
       flex-direction: column;
       gap: 16px;
+      overflow-x: hidden;
+    }
+    .lvl-short {
+      display: none;
     }
     /* Barra Superior */
     .top-bar {
       background: #FFFFFF;
       border: 1px solid #D2D6DC;
-      border-radius: 12px;
-      padding: 10px 16px;
+      border-radius: 14px;
+      padding: 12px 16px;
       display: flex;
       flex-direction: column;
       gap: 10px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.04);
     }
-    .top-bar-row {
+    .top-bar-level-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .btn-group-level {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .top-bar-controls-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -65,6 +83,11 @@
       gap: 8px;
     }
     .btn-group {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .btn-pair {
       display: flex;
       align-items: center;
       gap: 6px;
@@ -84,12 +107,15 @@
       justify-content: center;
       gap: 6px;
       transition: all 0.15s ease;
+      touch-action: manipulation;
+      user-select: none;
+      -webkit-user-select: none;
     }
     button:hover {
       background: #E2E8F0;
     }
     button:active {
-      transform: scale(0.97);
+      transform: scale(0.96);
     }
     button.active {
       background: #165E7D;
@@ -138,12 +164,14 @@
     }
     .counter-columns {
       display: flex;
+      flex-shrink: 0;
       gap: 8px;
       align-items: center;
       position: relative;
     }
     .column-unit {
       display: flex;
+      flex-shrink: 0;
       flex-direction: column;
       align-items: center;
       gap: 12px;
@@ -181,7 +209,7 @@
       filter: brightness(1.25);
     }
 
-    /* Flechas Triangulares */
+    /* Flechas Triangulares con Área Táctil Expandida */
     .arrow-btn {
       width: 58px;
       height: 38px;
@@ -192,6 +220,15 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      position: relative;
+      touch-action: manipulation;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    .arrow-btn::before {
+      content: "";
+      position: absolute;
+      inset: -8px -6px;
     }
     .arrow-btn svg {
       width: 100%;
@@ -199,6 +236,7 @@
       fill: #165E7D;
       filter: drop-shadow(0 2px 3px rgba(0,0,0,0.25));
       transition: fill 0.15s ease, transform 0.1s ease;
+      pointer-events: none;
     }
     .arrow-btn:hover svg {
       fill: #2080AA;
@@ -219,6 +257,8 @@
       align-items: center;
       position: relative;
       box-shadow: inset 0 0 12px rgba(0,0,0,0.8), 0 8px 24px rgba(0,0,0,0.3);
+      user-select: none;
+      -webkit-user-select: none;
     }
     .wheel {
       width: 82px;
@@ -235,8 +275,11 @@
       border-radius: 4px;
       overflow: hidden;
       position: relative;
-      cursor: pointer;
+      cursor: ns-resize;
+      touch-action: pan-x;
       box-shadow: inset -3px 0 6px rgba(0,0,0,0.6), inset 3px 0 6px rgba(0,0,0,0.6);
+      user-select: none;
+      -webkit-user-select: none;
     }
     .wheel::before {
       content: "";
@@ -800,31 +843,182 @@
       color: #E35E28;
       text-decoration: underline;
     }
+    /* Responsividad y Vista Móvil Premium */
     @media (max-width: 650px) {
-      .odometer-wrapper {
-        transform: scale(0.78);
-        transform-origin: center top;
-        margin-bottom: -35px;
-      }
-      .top-bar-row {
-        justify-content: center;
-      }
-      .btn-group {
-        flex-wrap: wrap;
-        justify-content: center;
-      }
-    }
-    @media (max-width: 480px) {
-      .odometer-wrapper {
-        transform: scale(0.60);
-        transform-origin: center top;
-        margin-bottom: -70px;
-      }
       body {
+        padding: 8px 8px 24px 8px;
+      }
+      .container {
+        gap: 12px;
+      }
+      .lvl-full {
+        display: none;
+      }
+      .lvl-short {
+        display: inline;
+      }
+      .top-bar {
         padding: 8px;
+        gap: 6px;
+        display: flex;
+        flex-direction: column;
+      }
+      .top-bar-level-row {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        width: 100%;
+      }
+      .btn-group-level {
+        flex: 1;
+        display: flex !important;
+        background: #E2E8F0;
+        padding: 3px;
+        border-radius: 10px;
+        align-items: center;
+        gap: 2px;
+        box-sizing: border-box;
+      }
+      .btn-group-level #lblLevel {
+        display: none;
+      }
+      .btn-group-level button {
+        flex: 1;
+        padding: 6px 2px;
+        font-size: 11.5px;
+        font-weight: 800;
+        border: none;
+        background: transparent;
+        color: #4A5568;
+        border-radius: 7px;
+        justify-content: center;
+        min-height: 36px;
+      }
+      .btn-group-level button.active {
+        background: #165E7D;
+        color: #FFFFFF;
+        box-shadow: 0 2px 6px rgba(22, 94, 125, 0.3);
+      }
+      .btn-group-level #btnAddCol {
+        flex: 0 0 auto;
+        padding: 6px 8px;
+        background: #FFFFFF;
+        color: #2B6CB0;
+        border: 1px dashed #63B3ED;
+      }
+      .btn-lang-top {
+        min-height: 36px;
+        padding: 6px 8px;
+        font-size: 12px;
+        font-weight: 800;
+        border-radius: 10px;
+        flex-shrink: 0;
+      }
+      .top-bar-controls-row {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        width: 100%;
+      }
+      .btn-pair {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 6px;
+        width: 100%;
+      }
+      .btn-pair button {
+        width: 100%;
+        min-height: 38px;
+        font-size: 12px;
+        justify-content: center;
+        border-radius: 8px;
+      }
+
+      /* Odómetro elástico */
+      .odometer-wrapper {
+        padding: 2px 0 0 0;
+        width: 100%;
+        overflow: hidden;
+      }
+      .counter-columns {
+        transition: transform 0.2s cubic-bezier(0.2, 0, 0, 1);
+      }
+
+      /* Paneles */
+      .breakdown-panel {
+        padding: 12px 10px;
+        gap: 10px;
+      }
+      .breakdown-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+      }
+      .breakdown-title {
+        font-size: 13.5px;
+        text-align: center;
+        justify-content: center;
+      }
+      .btn-speak {
+        width: 100%;
+        min-height: 40px;
+        justify-content: center;
       }
       .words-box {
-        font-size: 15px;
+        padding: 10px 12px;
+        font-size: clamp(14px, 3.8vw, 17px);
+        text-align: center;
+      }
+      .chips-row {
+        justify-content: center;
+        gap: 6px;
+      }
+      .chip {
+        padding: 6px 10px;
+      }
+      .chip-pos {
+        font-size: 10px;
+      }
+      .chip-val {
+        font-size: 13.5px;
+      }
+      .challenge-panel {
+        padding: 12px 10px;
+        gap: 10px;
+      }
+      .challenge-prompt {
+        padding: 10px 12px;
+        font-size: 13.5px;
+        text-align: center;
+      }
+      .challenge-actions {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        width: 100%;
+      }
+      .challenge-actions button {
+        min-height: 44px;
+        font-size: 13px;
+        width: 100%;
+        justify-content: center;
+      }
+      #challengeFeedback {
+        grid-column: span 2;
+        text-align: center;
+        justify-content: center;
+        margin-left: 0 !important;
+        font-size: 13px;
+        padding-top: 2px;
+      }
+    }
+    @media (max-width: 380px) {
+      .top-bar button {
+        font-size: 11px;
+        padding: 6px 4px;
+      }
+      .btn-group-level button {
+        font-size: 11px;
       }
     }
   </style>
@@ -835,29 +1029,30 @@
 
   <!-- Barra Superior -->
   <div class="top-bar">
-    <div class="top-bar-row">
-      <div class="btn-group">
+    <div class="top-bar-level-row">
+      <div class="btn-group-level">
         <span id="lblLevel" style="font-weight: 800; font-size: 13px; color: #4A5568;">Nivel:</span>
-        <button id="lvl3" onclick="setLevel(3)">3 Dígitos</button>
-        <button id="lvl4" onclick="setLevel(4)">4 Dígitos</button>
-        <button id="lvl5" onclick="setLevel(5)">5 Dígitos</button>
-        <button id="lvl6" class="active" onclick="setLevel(6)">6 Dígitos</button>
+        <button id="lvl3" onclick="setLevel(3)"><span class="lvl-full">3 Dígitos</span><span class="lvl-short">3 Díg</span></button>
+        <button id="lvl4" onclick="setLevel(4)"><span class="lvl-full">4 Dígitos</span><span class="lvl-short">4 Díg</span></button>
+        <button id="lvl5" onclick="setLevel(5)"><span class="lvl-full">5 Dígitos</span><span class="lvl-short">5 Díg</span></button>
+        <button id="lvl6" class="active" onclick="setLevel(6)"><span class="lvl-full">6 Dígitos</span><span class="lvl-short">6 Díg</span></button>
         <button id="btnAddCol" class="btn-dashed" onclick="addNextColumn()">
           <span class="material-symbols-rounded">add</span>
-          <span id="lblAddCol">Columna</span>
+          <span id="lblAddCol"><span class="lvl-full">Columna</span><span class="lvl-short">Col</span></span>
         </button>
       </div>
-      <div class="btn-group">
-        <button id="btnMode" onclick="toggleMode()">Modo: Automático</button>
-        <button id="btnLang" class="btn-yellow" onclick="toggleLanguage()">
-          <span class="material-symbols-rounded">language</span>
-          <span id="lblLang">ES</span>
-        </button>
-      </div>
+      <button id="btnLang" class="btn-yellow btn-lang-top" onclick="toggleLanguage()">
+        <span class="material-symbols-rounded">language</span>
+        <span id="lblLang">ES</span>
+      </button>
     </div>
-    <div class="top-bar-row">
-      <div class="btn-group">
+
+    <div class="top-bar-controls-row">
+      <div class="btn-group btn-pair">
+        <button id="btnMode" onclick="toggleMode()">Modo: Automático</button>
         <button id="btnZeros" onclick="toggleZeros()">Ceros Izq: Visibles</button>
+      </div>
+      <div class="btn-group btn-pair">
         <button id="btnRandom" class="btn-yellow" onclick="setRandom()">
           <span class="material-symbols-rounded">casino</span>
           <span id="lblRandom">Número Sorpresa</span>
@@ -867,7 +1062,7 @@
           <span id="lblReset">Poner a 0</span>
         </button>
       </div>
-      <div class="btn-group">
+      <div class="btn-group btn-pair">
         <button id="btnSound" onclick="toggleSound()">
           <span class="material-symbols-rounded" id="iconSound">volume_up</span>
           <span id="lblSound">Sonido: ON</span>
@@ -1439,6 +1634,7 @@
     }
 
     checkChallengeAuto();
+    updateOdometerScale();
   }
 
   function stepColumn(idx, dir) {
@@ -1579,11 +1775,33 @@
     document.title = isEn ? "Mechanical Counter — Understanding Place Value" : "Contador Mecánico — Aprendiendo el Valor Posicional";
     document.getElementById("lblLang").textContent = isEn ? "EN" : "ES";
     document.getElementById("lblLevel").textContent = isEn ? "Level:" : "Nivel:";
-    document.getElementById("lvl3").textContent = isEn ? "3 Digits" : "3 Dígitos";
-    document.getElementById("lvl4").textContent = isEn ? "4 Digits" : "4 Dígitos";
-    document.getElementById("lvl5").textContent = isEn ? "5 Digits" : "5 Dígitos";
-    document.getElementById("lvl6").textContent = isEn ? "6 Digits" : "6 Dígitos";
-    document.getElementById("lblAddCol").textContent = isEn ? "Column" : "Columna";
+    const setLvlText = (id, fullEs, shortEs, fullEn, shortEn) => {
+      const btn = document.getElementById(id);
+      if (!btn) return;
+      const full = btn.querySelector(".lvl-full");
+      const short = btn.querySelector(".lvl-short");
+      if (full && short) {
+        full.textContent = isEn ? fullEn : fullEs;
+        short.textContent = isEn ? shortEn : shortEs;
+      } else {
+        btn.textContent = isEn ? fullEn : fullEs;
+      }
+    };
+    setLvlText("lvl3", "3 Dígitos", "3 Díg", "3 Digits", "3 Dig");
+    setLvlText("lvl4", "4 Dígitos", "4 Díg", "4 Digits", "4 Dig");
+    setLvlText("lvl5", "5 Dígitos", "5 Díg", "5 Digits", "5 Dig");
+    setLvlText("lvl6", "6 Dígitos", "6 Díg", "6 Digits", "6 Dig");
+    const addColEl = document.getElementById("lblAddCol");
+    if (addColEl) {
+      const full = addColEl.querySelector(".lvl-full");
+      const short = addColEl.querySelector(".lvl-short");
+      if (full && short) {
+        full.textContent = isEn ? "Column" : "Columna";
+        short.textContent = isEn ? "Col" : "Col";
+      } else {
+        addColEl.textContent = isEn ? "Column" : "Columna";
+      }
+    }
     document.getElementById("btnMode").textContent = isManualMode 
       ? (isEn ? "Mode: Manual" : "Modo: Manual")
       : (isEn ? "Mode: Automatic" : "Modo: Automático");
@@ -1609,7 +1827,7 @@
     document.getElementById("lblStars").textContent = isEn ? `${stars} ${stars === 1 ? "Star" : "Stars"}` : `${stars} ${stars === 1 ? "Estrella" : "Estrellas"}`;
     document.getElementById("bannerMsg").textContent = isManualMode
       ? (isEn ? "Manual Mode active: move each column yourself to complete regroupings!" : "Modo Manual activo: ¡mueve cada posición tú mismo para completar los acarreos!")
-      : (isEn ? "Use the ▲ and ▼ arrows to see how values change!" : "¡Usa las flechas ▲ y ▼ para ver cómo cambian los valores!");
+      : (isEn ? "Use the ▲ and ▼ arrows or swipe the wheels to see how values change!" : "¡Usa las flechas ▲ y ▼ o desliza los tambores para ver cómo cambian los valores!");
   }
 
   function toggleZeros() {
@@ -1913,8 +2131,93 @@
     fb.style.color = "#C53030";
   }
 
+  function updateOdometerScale() {
+    const wrapper = document.querySelector(".odometer-wrapper");
+    const columns = document.querySelector(".counter-columns");
+    if (!wrapper || !columns) return;
+
+    // Conteo de columnas activas visibles
+    const count = activeDigits || 6;
+    const colWidth = 110; // ancho de cada columna (rueda 82px + frame padding 20px + borde 8px)
+    const colGap = 8;
+    const naturalWidth = count * colWidth + (count - 1) * colGap;
+    const naturalHeight = 346; // altura del conjunto: header + flecha + tambor + flecha
+
+    const isSmallMobile = window.innerWidth <= 480;
+    const containerPadding = isSmallMobile ? 16 : (window.innerWidth <= 650 ? 24 : 32);
+    const availWidth = Math.min(window.innerWidth - containerPadding, 900);
+
+    let scale = 1;
+    if (availWidth < naturalWidth) {
+      scale = Math.max(availWidth / naturalWidth, 0.40);
+    }
+
+    columns.style.transform = `scale(${scale})`;
+    columns.style.transformOrigin = "center top";
+
+    // Ajuste exacto de la altura del contenedor para eliminar huecos o solapamientos
+    wrapper.style.height = `${Math.round(naturalHeight * scale + 10)}px`;
+  }
+
+  function setupWheelTouchEvents() {
+    for (let i = 0; i < 6; i++) {
+      const colEl = document.getElementById("col_" + i);
+      if (!colEl) continue;
+
+      let startY = 0;
+      let startX = 0;
+      let lastStepY = 0;
+      let isVerticalGesture = false;
+      const DRAG_THRESHOLD = 30; // píxeles de desplazamiento por paso
+
+      colEl.addEventListener("touchstart", (e) => {
+        if (e.touches.length === 1) {
+          startY = e.touches[0].clientY;
+          startX = e.touches[0].clientX;
+          lastStepY = startY;
+          isVerticalGesture = false;
+        }
+      }, { passive: true });
+
+      colEl.addEventListener("touchmove", (e) => {
+        if (e.touches.length !== 1) return;
+        const curY = e.touches[0].clientY;
+        const curX = e.touches[0].clientX;
+        const diffY = curY - startY;
+        const diffX = curX - startX;
+
+        if (!isVerticalGesture && Math.abs(diffY) > 8 && Math.abs(diffY) > Math.abs(diffX)) {
+          isVerticalGesture = true;
+        }
+
+        if (isVerticalGesture) {
+          if (e.cancelable) e.preventDefault();
+          const stepDiff = curY - lastStepY;
+          if (Math.abs(stepDiff) >= DRAG_THRESHOLD) {
+            if (stepDiff < 0) {
+              // Deslizamiento hacia arriba -> Avanzar número (+1)
+              stepColumn(i, 1);
+            } else {
+              // Deslizamiento hacia abajo -> Retroceder número (-1)
+              stepColumn(i, -1);
+            }
+            lastStepY = curY;
+          }
+        }
+      }, { passive: false });
+
+      colEl.addEventListener("touchend", () => {
+        isVerticalGesture = false;
+      }, { passive: true });
+    }
+  }
+
   initWheels();
+  setupWheelTouchEvents();
   updateUI(false);
+  updateOdometerScale();
+  window.addEventListener("resize", updateOdometerScale);
+  window.addEventListener("orientationchange", () => setTimeout(updateOdometerScale, 150));
   window.speechSynthesis.onvoiceschanged = () => {};
 </script>
 </body>
