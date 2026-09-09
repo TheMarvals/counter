@@ -1153,19 +1153,26 @@
   }
 
   function speakCurrentNumber() {
-    if (!("speechSynthesis" in window)) return;
+    if (!("speechSynthesis" in window)) {
+      alert("Tu navegador no soporta síntesis de voz.");
+      return;
+    }
     window.speechSynthesis.cancel();
     const words = numberToWords(currentValue);
     const utter = new SpeechSynthesisUtterance(words);
-    utter.lang = currentLang === "en" ? "en-US" : "es-ES";
+    const isEn = currentLang === "en";
+    utter.lang = isEn ? "en-US" : "es-ES";
     utter.rate = 0.95;
 
-    const voices = window.speechSynthesis.getVoices();
+    const voices = window.speechSynthesis.getVoices() || [];
     let preferred = null;
-    if (currentLang === "en") {
-      preferred = voices.find(v => v.lang.startsWith("en") && (v.name.includes("Samantha") || v.name.includes("Alex") || v.name.includes("Natural") || v.name.includes("Google")));
+    if (isEn) {
+      preferred = voices.find(v => v.lang.startsWith("en") && (v.name.includes("Samantha") || v.name.includes("Alex") || v.name.includes("Natural") || v.name.includes("Google") || v.name.includes("US")));
     } else {
-      preferred = voices.find(v => v.lang.startsWith("es") && (v.name.includes("Mónica") || v.name.includes("Paulina") || v.name.includes("Jorge") || v.name.includes("Google")));
+      preferred = voices.find(v => v.lang.startsWith("es") && (v.name.includes("Mónica") || v.name.includes("Paulina") || v.name.includes("Jorge") || v.name.includes("Google") || v.name.includes("Natural") || v.name.includes("Sabina") || v.name.includes("Helena")));
+    }
+    if (!preferred && voices.length > 0) {
+      preferred = voices.find(v => v.lang.startsWith(isEn ? "en" : "es"));
     }
     if (preferred) utter.voice = preferred;
 
