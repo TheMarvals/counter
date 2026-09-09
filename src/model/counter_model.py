@@ -112,10 +112,8 @@ class CounterModel(QObject):
         return pos_idx < vis_count
 
     def activate_next_column(self):
-        vis_count = self.get_visible_columns_count()
-        if vis_count < self._active_digits:
-            next_idx = vis_count
-            self.increment_column(next_idx)
+        if self._active_digits < 6:
+            self.active_digits = self._active_digits + 1
 
     def set_value(self, val: int, reason: str = "direct"):
         val = max(0, min(self._max_val, val))
@@ -143,6 +141,8 @@ class CounterModel(QObject):
             new_val = old_val + diff
 
             if curr_digit == 9:
+                if pos_idx + 1 < 6 and pos_idx + 1 >= self._active_digits:
+                    self.active_digits = pos_idx + 2
                 dest_col = min(5, pos_idx + 1)
                 dest_name = self.col_full_names[dest_col]
                 curr_name = self.col_full_names[pos_idx]
@@ -157,6 +157,9 @@ class CounterModel(QObject):
             return
 
         # MODO AUTOMÁTICO: Acarreo en cascada normal
+        if curr_digit == 9 and pos_idx >= self._active_digits - 1 and self._active_digits < 6:
+            self.active_digits = self._active_digits + 1
+
         new_val = old_val + weight
         if new_val > self._max_val:
             new_val = new_val % (self._max_val + 1)

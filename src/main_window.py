@@ -119,9 +119,10 @@ class MainWindow(QMainWindow):
 
         self.btn_lvl3 = QPushButton("3 Dígitos")
         self.btn_lvl4 = QPushButton("4 Dígitos")
+        self.btn_lvl5 = QPushButton("5 Dígitos")
         self.btn_lvl6 = QPushButton("6 Dígitos")
 
-        for btn in [self.btn_lvl3, self.btn_lvl4, self.btn_lvl6]:
+        for btn in [self.btn_lvl3, self.btn_lvl4, self.btn_lvl5, self.btn_lvl6]:
             btn.setCheckable(True)
             btn.setCursor(Qt.CursorShape.PointingHandCursor)
 
@@ -130,10 +131,11 @@ class MainWindow(QMainWindow):
         self.lvl_group = QButtonGroup(self)
         self.lvl_group.addButton(self.btn_lvl3, 3)
         self.lvl_group.addButton(self.btn_lvl4, 4)
+        self.lvl_group.addButton(self.btn_lvl5, 5)
         self.lvl_group.addButton(self.btn_lvl6, 6)
         self.lvl_group.idClicked.connect(self._on_level_changed)
 
-        for btn in [self.btn_lvl3, self.btn_lvl4, self.btn_lvl6]:
+        for btn in [self.btn_lvl3, self.btn_lvl4, self.btn_lvl5, self.btn_lvl6]:
             btn.setStyleSheet("""
                 QPushButton {
                     background-color: #EDF2F7;
@@ -280,6 +282,7 @@ class MainWindow(QMainWindow):
             self.lvl_label.setText("Level:")
             self.btn_lvl3.setText("3 Digits")
             self.btn_lvl4.setText("4 Digits")
+            self.btn_lvl5.setText("5 Digits")
             self.btn_lvl6.setText("6 Digits")
             self.btn_add_col.setText("+ Column")
             self.btn_lang.setText("EN (English)")
@@ -299,6 +302,7 @@ class MainWindow(QMainWindow):
             self.lvl_label.setText("Nivel:")
             self.btn_lvl3.setText("3 Dígitos")
             self.btn_lvl4.setText("4 Dígitos")
+            self.btn_lvl5.setText("5 Dígitos")
             self.btn_lvl6.setText("6 Dígitos")
             self.btn_add_col.setText("+ Columna")
             self.btn_lang.setText("ES (Español)")

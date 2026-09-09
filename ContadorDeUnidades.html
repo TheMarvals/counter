@@ -283,6 +283,11 @@
       color: #F8F8FA;
       text-shadow: 0 3px 6px rgba(0,0,0,0.8);
       user-select: none;
+      transition: opacity 0.25s ease;
+    }
+    .wheel.leading-zero .wheel-digit {
+      opacity: 0.20;
+      filter: grayscale(0.8);
     }
 
     /* Punto o Coma Separador de Miles */
@@ -595,6 +600,7 @@
         <span id="lblLevel" style="font-weight: 800; font-size: 13px; color: #4A5568;">Nivel:</span>
         <button id="lvl3" onclick="setLevel(3)">3 Dígitos</button>
         <button id="lvl4" onclick="setLevel(4)">4 Dígitos</button>
+        <button id="lvl5" onclick="setLevel(5)">5 Dígitos</button>
         <button id="lvl6" class="active" onclick="setLevel(6)">6 Dígitos</button>
         <button id="btnAddCol" class="btn-dashed" onclick="addNextColumn()">
           <span class="material-symbols-rounded">add</span>
@@ -999,16 +1005,18 @@
     if (currentValue > maxVal) currentValue = maxVal;
     if (currentValue < 0) currentValue = 0;
 
+    const neededDigits = currentValue === 0 ? 1 : String(currentValue).length;
+    if (neededDigits > activeDigits && neededDigits <= 6) {
+      activeDigits = neededDigits;
+      document.querySelectorAll(".btn-group button").forEach(b => {
+        if (b.id === "lvl" + activeDigits) b.classList.add("active");
+        else if (b.id && b.id.startsWith("lvl")) b.classList.remove("active");
+      });
+    }
+
     const currentDigits = [];
     for (let i = 0; i < 6; i++) {
       currentDigits[i] = getDigit(i);
-    }
-
-    // Visibilidad de columnas
-    let visibleCount = activeDigits;
-    if (hideLeadingZeros) {
-      visibleCount = currentValue === 0 ? 1 : String(currentValue).length;
-      visibleCount = Math.min(activeDigits, Math.max(1, visibleCount));
     }
 
     const colNames = currentLang === "en" ? colNamesEN : colNamesES;
@@ -1016,12 +1024,20 @@
 
     for (let i = 0; i < 6; i++) {
       const col = document.getElementById("col_" + i);
-      const isVisible = i < visibleCount;
+      const isVisible = i < activeDigits;
       if (isVisible) col.classList.remove("hidden");
       else col.classList.add("hidden");
 
       // Actualizar texto del encabezado
       document.getElementById("tag_" + i).textContent = colNames[i];
+
+      // Atenuar ceros a la izquierda si hideLeadingZeros está activo
+      const isLeadingZero = hideLeadingZeros && (i >= neededDigits) && (currentDigits[i] === 0);
+      const wheelEl = document.getElementById("wheel_" + i);
+      if (wheelEl) {
+        if (isLeadingZero) wheelEl.classList.add("leading-zero");
+        else wheelEl.classList.remove("leading-zero");
+      }
 
       const inner = document.getElementById("inner_" + i);
       const digit = currentDigits[i];
@@ -1063,9 +1079,9 @@
     }
     prevDigits = [...currentDigits];
 
-    // Separador de miles entre UM (3) y C (2)
+    // Separador de miles entre UM (3) y C (2) cuando el valor >= 1.000 y al menos 4 dígitos activos
     const mark = document.getElementById("thousandsMark");
-    if (currentValue >= 1000 && visibleCount >= 4) {
+    if (currentValue >= 1000 && activeDigits >= 4) {
       mark.style.display = "block";
       if (currentLang === "en") {
         mark.className = "thousands-mark comma";
@@ -1099,7 +1115,7 @@
     } else {
       let activeItems = [];
       for (let i = 5; i >= 0; i--) {
-        if (i < visibleCount) {
+        if (i < activeDigits) {
           let d = currentDigits[i];
           let val = d * weights[i];
           if (val > 0) {
@@ -1147,6 +1163,10 @@
       currentValue += diff;
 
       if (dir > 0 && oldDigit === 9) {
+        // Al completar 9 -> 0, asegurar que la siguiente columna esté activa/visible para poder sumar 1
+        if (idx + 1 < 6 && idx + 1 >= activeDigits) {
+          setLevel(idx + 2);
+        }
         const dest = colFullNames[Math.min(5, idx + 1)];
         const curr = colFullNames[idx];
         const msg = currentLang === "en" 
@@ -1167,6 +1187,11 @@
     }
 
     // MODO AUTOMÁTICO: Acarreo en cascada normal
+    // Si la suma supera las columnas activas actuales pero cabe en 6 dígitos, expandir activeDigits
+    if (dir > 0 && idx >= activeDigits - 1 && oldDigit === 9 && activeDigits < 6) {
+      setLevel(activeDigits + 1);
+    }
+
     let newVal = currentValue + dir * weights[idx];
     const maxVal = Math.pow(10, activeDigits) - 1;
 
@@ -1223,10 +1248,8 @@
 
   function addNextColumn() {
     playClickSound();
-    let visibleCount = currentValue === 0 ? 1 : String(currentValue).length;
-    if (visibleCount < activeDigits) {
-      currentValue += weights[visibleCount];
-      updateUI(true);
+    if (activeDigits < 6) {
+      setLevel(activeDigits + 1);
     }
   }
 
@@ -1266,6 +1289,7 @@
     document.getElementById("lblLevel").textContent = isEn ? "Level:" : "Nivel:";
     document.getElementById("lvl3").textContent = isEn ? "3 Digits" : "3 Dígitos";
     document.getElementById("lvl4").textContent = isEn ? "4 Digits" : "4 Dígitos";
+    document.getElementById("lvl5").textContent = isEn ? "5 Digits" : "5 Dígitos";
     document.getElementById("lvl6").textContent = isEn ? "6 Digits" : "6 Dígitos";
     document.getElementById("lblAddCol").textContent = isEn ? "Column" : "Columna";
     document.getElementById("btnMode").textContent = isManualMode 
