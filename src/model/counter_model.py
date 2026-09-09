@@ -35,7 +35,7 @@ class CounterModel(QObject):
         self._max_val = 10 ** max_digits - 1
         self._value = max(0, min(self._max_val, initial_value))
         self._active_digits = max_digits
-        self._hide_leading_zeros = True
+        self._hide_leading_zeros = False
         self._mode = "auto"   # "auto" o "manual"
         self._lang = "es"     # "es" o "en"
 

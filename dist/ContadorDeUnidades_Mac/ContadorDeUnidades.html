@@ -617,7 +617,7 @@
     </div>
     <div class="top-bar-row">
       <div class="btn-group">
-        <button id="btnZeros" onclick="toggleZeros()">Ceros Izq: Ocultos</button>
+        <button id="btnZeros" onclick="toggleZeros()">Ceros Izq: Visibles</button>
         <button id="btnRandom" class="btn-yellow" onclick="setRandom()">
           <span class="material-symbols-rounded">casino</span>
           <span id="lblRandom">Número Sorpresa</span>
@@ -820,7 +820,7 @@
   // Estado del modelo
   let currentValue = 103245;
   let activeDigits = 6;
-  let hideLeadingZeros = true;
+  let hideLeadingZeros = false;
   let soundEnabled = true;
   let isManualMode = false; // MODO MANUAL: no suma automáticamente
   let currentLang = "es";    // "es" o "en"

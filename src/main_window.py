@@ -199,7 +199,7 @@ class MainWindow(QMainWindow):
         row2 = QHBoxLayout()
         row2.setSpacing(8)
 
-        self.btn_zeros = QPushButton("Ceros Izq: Ocultos")
+        self.btn_zeros = QPushButton("Ceros Izq: Visibles")
         self.btn_zeros.setCursor(Qt.CursorShape.PointingHandCursor)
         self.btn_zeros.setStyleSheet("""
             QPushButton {

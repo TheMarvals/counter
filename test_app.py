@@ -37,6 +37,11 @@ class TestCounterModel(unittest.TestCase):
     def test_leading_zeros_detection(self):
         m = CounterModel(245)
         self.assertEqual(m.get_significant_digits_count(), 3)
+        # Por defecto los ceros a la izquierda son visibles (6 activos):
+        self.assertEqual(m.get_visible_columns_count(), 6)
+
+        # Al activar la opción de ocultar ceros a la izquierda, muestra 3:
+        m.hide_leading_zeros = True
         self.assertEqual(m.get_visible_columns_count(), 3)
 
         m.set_value(5)
