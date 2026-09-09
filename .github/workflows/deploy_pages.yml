@@ -25,10 +25,18 @@ jobs:
         uses: actions/checkout@v4
       - name: Setup Pages
         uses: actions/configure-pages@v5
+        with:
+          enablement: true
+      - name: Prepare Pages directory
+        run: |
+          mkdir -p _site
+          cp index.html _site/
+          cp ContadorDeUnidades.html _site/
+          if [ -d assets ]; then cp -r assets _site/; fi
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: '.'
+          path: '_site'
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
