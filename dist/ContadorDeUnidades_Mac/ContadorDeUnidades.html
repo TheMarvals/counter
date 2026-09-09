@@ -464,72 +464,163 @@
     .celebration-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(15, 23, 42, 0.45);
-      backdrop-filter: blur(4px);
-      -webkit-backdrop-filter: blur(4px);
+      background: rgba(10, 15, 29, 0.72);
+      backdrop-filter: blur(12px) saturate(160%);
+      -webkit-backdrop-filter: blur(12px) saturate(160%);
       z-index: 9998;
       display: flex;
       align-items: center;
       justify-content: center;
       opacity: 0;
       pointer-events: none;
-      transition: opacity 0.28s ease;
+      transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      padding: 20px;
     }
     .celebration-overlay.active {
       opacity: 1;
       pointer-events: auto;
     }
     .celebration-card {
-      background: #FFFFFF;
-      border: 3px solid #ECC94B;
-      border-radius: 20px;
-      padding: 26px 36px;
+      position: relative;
+      background: linear-gradient(165deg, rgba(30, 41, 59, 0.96) 0%, rgba(15, 23, 42, 0.98) 100%);
+      border: 1px solid rgba(251, 191, 36, 0.38);
+      border-radius: 28px;
+      padding: 36px 40px 32px 40px;
+      max-width: 420px;
+      width: 100%;
       text-align: center;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 12px;
-      box-shadow: 0 20px 45px rgba(0, 0, 0, 0.25), 0 0 35px rgba(236, 201, 75, 0.5);
-      transform: scale(0.6);
-      transition: transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-      cursor: pointer;
+      gap: 16px;
+      box-shadow: 0 25px 65px -12px rgba(0, 0, 0, 0.75), 0 0 50px -10px rgba(245, 158, 11, 0.28), inset 0 1px 1px rgba(255, 255, 255, 0.15);
+      transform: scale(0.7) translateY(24px);
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+      overflow: hidden;
+    }
+    .celebration-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(251, 191, 36, 0.8), transparent);
     }
     .celebration-overlay.active .celebration-card {
-      transform: scale(1);
+      transform: scale(1) translateY(0);
+    }
+    .celebration-halo {
+      position: relative;
+      width: 96px;
+      height: 96px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 2px;
+    }
+    .celebration-halo::before {
+      content: "";
+      position: absolute;
+      inset: -14px;
+      background: radial-gradient(circle, rgba(245, 158, 11, 0.42) 0%, rgba(245, 158, 11, 0) 70%);
+      filter: blur(14px);
+      border-radius: 50%;
+      animation: auraPulse 2s infinite alternate ease-in-out;
+    }
+    @keyframes auraPulse {
+      0% { transform: scale(0.88); opacity: 0.6; }
+      100% { transform: scale(1.15); opacity: 1; }
+    }
+    .celebration-medallion {
+      position: relative;
+      width: 86px;
+      height: 86px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #FDE68A 0%, #F59E0B 48%, #B45309 100%);
+      box-shadow: 0 10px 25px rgba(245, 158, 11, 0.45), inset 0 2px 4px rgba(255, 255, 255, 0.75), inset 0 -3px 5px rgba(146, 64, 14, 0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 3px solid rgba(255, 255, 255, 0.25);
     }
     .celebration-star-icon {
-      font-size: 72px;
-      color: #D69E2E;
+      font-size: 52px;
+      color: #FFFFFF;
       font-variation-settings: 'FILL' 1;
-      filter: drop-shadow(0 4px 14px rgba(214, 158, 46, 0.6));
-      animation: starPulseAnim 1.4s infinite alternate ease-in-out;
+      filter: drop-shadow(0 3px 6px rgba(146, 64, 14, 0.6));
+      animation: starRotateTrophy 2.4s infinite alternate ease-in-out;
     }
-    @keyframes starPulseAnim {
-      0% { transform: scale(0.95) rotate(-6deg); }
-      100% { transform: scale(1.15) rotate(6deg); }
+    @keyframes starRotateTrophy {
+      0% { transform: scale(0.96) rotate(-4deg); }
+      100% { transform: scale(1.08) rotate(4deg); }
+    }
+    .celebration-kicker {
+      background: rgba(245, 158, 11, 0.12);
+      border: 1px solid rgba(245, 158, 11, 0.32);
+      color: #FCD34D;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 5px 14px;
+      border-radius: 999px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
     }
     .celebration-title {
-      font-size: 24px;
+      font-size: 26px;
       font-weight: 900;
-      color: #276749;
-      letter-spacing: 0.5px;
+      color: #F8FAFC;
+      letter-spacing: -0.5px;
+      margin: -4px 0 0 0;
+      line-height: 1.2;
     }
     .celebration-badge {
       display: inline-flex;
       align-items: center;
-      gap: 6px;
-      background: #FEFCBF;
-      border: 1.5px solid #D69E2E;
-      color: #744210;
-      padding: 6px 18px;
-      border-radius: 20px;
+      gap: 8px;
+      background: linear-gradient(135deg, rgba(251, 191, 36, 0.18), rgba(217, 119, 6, 0.12));
+      border: 1px solid rgba(251, 191, 36, 0.45);
+      color: #FEF08A;
+      padding: 8px 22px;
+      border-radius: 16px;
       font-weight: 800;
       font-size: 16px;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.1);
     }
     .celebration-subtitle {
-      font-size: 14px;
-      color: #4A5568;
-      font-weight: 700;
+      font-size: 13.5px;
+      color: #94A3B8;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .celebration-btn {
+      margin-top: 6px;
+      width: 100%;
+      max-width: 220px;
+      background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+      color: #FFFFFF;
+      font-size: 15px;
+      font-weight: 800;
+      padding: 12px 24px;
+      border-radius: 14px;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      box-shadow: 0 6px 18px rgba(245, 158, 11, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .celebration-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(245, 158, 11, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+    }
+    .celebration-btn:active {
+      transform: translateY(0);
     }
     .star-pop {
       animation: starPopAnim 0.75s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -799,20 +890,28 @@
 <!-- Canvas de Confeti a Pantalla Completa -->
 <canvas id="celebrationCanvas"></canvas>
 
-<!-- Overlay Modal de Celebración de Desafío -->
+<!-- Overlay Modal de Celebración de Desafío (Premium Glass) -->
 <div class="celebration-overlay" id="celebrationOverlay" onclick="dismissCelebration()">
   <div class="celebration-card" onclick="event.stopPropagation()">
-    <div style="display: flex; gap: 8px; align-items: center; justify-content: center;">
-      <span class="material-symbols-rounded" style="color: #ECC94B; font-size: 32px;">auto_awesome</span>
-      <span class="material-symbols-rounded celebration-star-icon">star</span>
-      <span class="material-symbols-rounded" style="color: #ECC94B; font-size: 32px;">auto_awesome</span>
+    <div class="celebration-halo">
+      <div class="celebration-medallion">
+        <span class="material-symbols-rounded celebration-star-icon">star</span>
+      </div>
     </div>
-    <div class="celebration-title" id="celebrationTitle">¡DESAFÍO COMPLETADO!</div>
+    <div class="celebration-kicker" id="celebrationKicker">DESAFÍO COMPLETADO</div>
+    <div class="celebration-title" id="celebrationTitle">¡Excelente Trabajo!</div>
     <div class="celebration-badge">
-      <span class="material-symbols-rounded" style="font-variation-settings: 'FILL' 1; color: #D69E2E;">star</span>
+      <span class="material-symbols-rounded" style="font-variation-settings: 'FILL' 1; color: #FBBF24; font-size: 20px;">star</span>
       <span id="celebrationStarBadge">+1 Estrella Ganada</span>
     </div>
-    <div class="celebration-subtitle" id="celebrationTotal">¡Llevas 1 estrella acumulada!</div>
+    <div class="celebration-subtitle">
+      <span class="material-symbols-rounded" style="font-size: 18px; color: #EAB308;">auto_awesome</span>
+      <span id="celebrationTotal">¡Llevas 1 estrella acumulada!</span>
+    </div>
+    <button class="celebration-btn" onclick="dismissCelebration()">
+      <span id="celebrationBtnText">Continuar</span>
+      <span class="material-symbols-rounded" style="font-size: 18px;">arrow_forward</span>
+    </button>
   </div>
 </div>
 
@@ -1517,11 +1616,15 @@
 
     const overlay = document.getElementById("celebrationOverlay");
     const isEn = currentLang === "en";
-    document.getElementById("celebrationTitle").textContent = isEn ? "CHALLENGE COMPLETED!" : "¡DESAFÍO COMPLETADO!";
-    document.getElementById("celebrationStarBadge").textContent = isEn ? "+1 Star Earned!" : "+1 Estrella Ganada!";
+    const kickerEl = document.getElementById("celebrationKicker");
+    if (kickerEl) kickerEl.textContent = isEn ? "CHALLENGE COMPLETED" : "DESAFÍO COMPLETADO";
+    document.getElementById("celebrationTitle").textContent = isEn ? "Outstanding Work!" : "¡Excelente Trabajo!";
+    document.getElementById("celebrationStarBadge").textContent = isEn ? "+1 Star Earned!" : "+1 Estrella Ganada";
     document.getElementById("celebrationTotal").textContent = isEn 
-      ? `Total: ${stars} ${stars === 1 ? "Star" : "Stars"}` 
-      : `¡Llevas ${stars} ${stars === 1 ? "Estrella" : "Estrellas"} acumuladas!`;
+      ? `Total: ${stars} ${stars === 1 ? "Star" : "Stars"} collected` 
+      : `¡Llevas ${stars} ${stars === 1 ? "estrella acumulada" : "estrellas acumuladas"}!`;
+    const btnTextEl = document.getElementById("celebrationBtnText");
+    if (btnTextEl) btnTextEl.textContent = isEn ? "Continue" : "Continuar";
 
     if (overlay) overlay.classList.add("active");
 
@@ -1538,7 +1641,7 @@
     if (celebrationTimer) clearTimeout(celebrationTimer);
     celebrationTimer = setTimeout(() => {
       dismissCelebration();
-    }, 2200);
+    }, 3800);
   }
 
   function dismissCelebration() {
