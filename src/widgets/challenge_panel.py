@@ -151,6 +151,14 @@ class ChallengePanel(QFrame):
             }
 
         self.prompt_label.setText(self.current_challenge["text"])
+        self.prompt_label.setStyleSheet("""
+            background-color: #FFFFFF;
+            color: #2D3748;
+            border: 2px dashed #CBD5E0;
+            border-radius: 8px;
+            padding: 10px 14px;
+        """)
+        self.stars_label.setStyleSheet("color: #D69E2E; font-weight: bold;")
         self.feedback_label.setText("")
 
     def _on_model_changed(self, new_val, digits, info):
@@ -183,8 +191,25 @@ class ChallengePanel(QFrame):
     def _handle_success(self):
         self.stars += 1
         self.stars_label.setText(f"{self.stars} {'Estrellas' if self.stars != 1 else 'Estrella'}")
-        self.feedback_label.setText("¡EXCELENTE! ¡Completado con éxito!")
-        self.feedback_label.setStyleSheet("color: #2F855A;")
+        self.stars_label.setStyleSheet("""
+            color: #744210;
+            background-color: #FEFCBF;
+            border: 1.5px solid #D69E2E;
+            border-radius: 10px;
+            padding: 4px 12px;
+            font-weight: bold;
+        """)
+        self.prompt_label.setText("¡DESAFÍO SUPERADO CON ÉXITO!  (+1 Estrella Ganada)")
+        self.prompt_label.setStyleSheet("""
+            background-color: #C6F6D5;
+            color: #22543D;
+            border: 2px solid #38A169;
+            border-radius: 8px;
+            padding: 12px 16px;
+            font-weight: bold;
+        """)
+        self.feedback_label.setText("¡EXCELENTE! ¡Completado!")
+        self.feedback_label.setStyleSheet("color: #2F855A; font-weight: bold;")
         self.sound_player.play_chime()
         self.current_challenge = None
-        QTimer.singleShot(2200, self.generate_new_challenge)
+        QTimer.singleShot(2400, self.generate_new_challenge)

@@ -439,6 +439,102 @@
       align-items: center;
       gap: 10px;
     }
+    .challenge-panel.solved {
+      border-color: #38A169 !important;
+      box-shadow: 0 0 25px rgba(56, 161, 105, 0.45);
+      transition: all 0.3s ease;
+    }
+
+    /* Recompensa Visual y Celebración */
+    #celebrationCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 9999;
+      display: none;
+    }
+    .celebration-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.45);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      z-index: 9998;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.28s ease;
+    }
+    .celebration-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .celebration-card {
+      background: #FFFFFF;
+      border: 3px solid #ECC94B;
+      border-radius: 20px;
+      padding: 26px 36px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      box-shadow: 0 20px 45px rgba(0, 0, 0, 0.25), 0 0 35px rgba(236, 201, 75, 0.5);
+      transform: scale(0.6);
+      transition: transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      cursor: pointer;
+    }
+    .celebration-overlay.active .celebration-card {
+      transform: scale(1);
+    }
+    .celebration-star-icon {
+      font-size: 72px;
+      color: #D69E2E;
+      font-variation-settings: 'FILL' 1;
+      filter: drop-shadow(0 4px 14px rgba(214, 158, 46, 0.6));
+      animation: starPulseAnim 1.4s infinite alternate ease-in-out;
+    }
+    @keyframes starPulseAnim {
+      0% { transform: scale(0.95) rotate(-6deg); }
+      100% { transform: scale(1.15) rotate(6deg); }
+    }
+    .celebration-title {
+      font-size: 24px;
+      font-weight: 900;
+      color: #276749;
+      letter-spacing: 0.5px;
+    }
+    .celebration-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #FEFCBF;
+      border: 1.5px solid #D69E2E;
+      color: #744210;
+      padding: 6px 18px;
+      border-radius: 20px;
+      font-weight: 800;
+      font-size: 16px;
+    }
+    .celebration-subtitle {
+      font-size: 14px;
+      color: #4A5568;
+      font-weight: 700;
+    }
+    .star-pop {
+      animation: starPopAnim 0.75s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    @keyframes starPopAnim {
+      0% { transform: scale(1); }
+      35% { transform: scale(1.45); color: #B7791F; text-shadow: 0 0 14px rgba(214, 158, 46, 0.9); }
+      70% { transform: scale(1.15); }
+      100% { transform: scale(1); }
+    }
     .app-footer {
       display: flex;
       justify-content: center;
@@ -694,6 +790,26 @@
 
 </div>
 
+<!-- Canvas de Confeti a Pantalla Completa -->
+<canvas id="celebrationCanvas"></canvas>
+
+<!-- Overlay Modal de Celebración de Desafío -->
+<div class="celebration-overlay" id="celebrationOverlay" onclick="dismissCelebration()">
+  <div class="celebration-card" onclick="event.stopPropagation()">
+    <div style="display: flex; gap: 8px; align-items: center; justify-content: center;">
+      <span class="material-symbols-rounded" style="color: #ECC94B; font-size: 32px;">auto_awesome</span>
+      <span class="material-symbols-rounded celebration-star-icon">star</span>
+      <span class="material-symbols-rounded" style="color: #ECC94B; font-size: 32px;">auto_awesome</span>
+    </div>
+    <div class="celebration-title" id="celebrationTitle">¡DESAFÍO COMPLETADO!</div>
+    <div class="celebration-badge">
+      <span class="material-symbols-rounded" style="font-variation-settings: 'FILL' 1; color: #D69E2E;">star</span>
+      <span id="celebrationStarBadge">+1 Estrella Ganada</span>
+    </div>
+    <div class="celebration-subtitle" id="celebrationTotal">¡Llevas 1 estrella acumulada!</div>
+  </div>
+</div>
+
 <script>
   // Estado del modelo
   let currentValue = 103245;
@@ -745,16 +861,21 @@
     if (!soundEnabled) return;
     try {
       initAudio();
-      [880, 1320, 1760].forEach((freq, i) => {
+      // Fanfarria triunfal de 4 notas: C5 (523Hz), E5 (659Hz), G5 (784Hz), C6 (1046Hz)
+      const notes = [523.25, 659.25, 783.99, 1046.50];
+      notes.forEach((freq, i) => {
+        const start = audioCtx.currentTime + i * 0.085;
+        const dur = (i === notes.length - 1) ? 0.65 : 0.28;
         const osc = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
-        osc.frequency.value = freq;
-        gain.gain.setValueAtTime(0.15, audioCtx.currentTime + i*0.08);
-        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + i*0.08 + 0.35);
+        osc.type = (i === notes.length - 1) ? "triangle" : "sine";
+        osc.frequency.setValueAtTime(freq, start);
+        gain.gain.setValueAtTime(0.22, start);
+        gain.gain.exponentialRampToValueAtTime(0.001, start + dur);
         osc.connect(gain);
         gain.connect(audioCtx.destination);
-        osc.start(audioCtx.currentTime + i*0.08);
-        osc.stop(audioCtx.currentTime + i*0.08 + 0.35);
+        osc.start(start);
+        osc.stop(start + dur);
       });
     } catch(e) {}
   }
@@ -1285,13 +1406,138 @@
     document.getElementById("challengeFeedback").textContent = "";
   }
 
+  let confettiAnimId = null;
+  function launchConfetti() {
+    const canvas = document.getElementById("celebrationCanvas");
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    canvas.style.display = "block";
+
+    if (confettiAnimId) cancelAnimationFrame(confettiAnimId);
+
+    const colors = ["#ECC94B", "#D69E2E", "#38A169", "#3182CE", "#E53E3E", "#ED8936", "#9F7AEA"];
+    const particleCount = 140;
+    const particles = [];
+
+    for (let i = 0; i < particleCount; i++) {
+      particles.push({
+        x: canvas.width / 2 + (Math.random() - 0.5) * 220,
+        y: canvas.height * 0.45 + (Math.random() - 0.5) * 80,
+        vx: (Math.random() - 0.5) * 18,
+        vy: (Math.random() * -15) - 4,
+        size: Math.random() * 9 + 6,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        rotation: Math.random() * 360,
+        rotSpeed: (Math.random() - 0.5) * 14,
+        shape: Math.random() > 0.35 ? "rect" : "circle",
+        opacity: 1,
+        drag: 0.965,
+        gravity: 0.36
+      });
+    }
+
+    const startTime = performance.now();
+    function animate(currentTime) {
+      const elapsed = currentTime - startTime;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      let alive = 0;
+      particles.forEach(p => {
+        p.vx *= p.drag;
+        p.vy *= p.drag;
+        p.vy += p.gravity;
+        p.x += p.vx;
+        p.y += p.vy;
+        p.rotation += p.rotSpeed;
+
+        if (elapsed > 1400) {
+          p.opacity = Math.max(0, 1 - (elapsed - 1400) / 1000);
+        }
+
+        if (p.opacity > 0 && p.y < canvas.height + 50) {
+          alive++;
+          ctx.save();
+          ctx.translate(p.x, p.y);
+          ctx.rotate((p.rotation * Math.PI) / 180);
+          ctx.globalAlpha = p.opacity;
+          ctx.fillStyle = p.color;
+
+          if (p.shape === "rect") {
+            ctx.fillRect(-p.size / 2, -p.size / 4, p.size, p.size / 2);
+          } else {
+            ctx.beginPath();
+            ctx.arc(0, 0, p.size / 2, 0, Math.PI * 2);
+            ctx.fill();
+          }
+          ctx.restore();
+        }
+      });
+
+      if (alive > 0 && elapsed < 2600) {
+        confettiAnimId = requestAnimationFrame(animate);
+      } else {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        canvas.style.display = "none";
+        confettiAnimId = null;
+      }
+    }
+    confettiAnimId = requestAnimationFrame(animate);
+  }
+
+  let celebrationTimer = null;
+  function triggerCelebrationReward() {
+    launchConfetti();
+    playChimeSound();
+
+    const overlay = document.getElementById("celebrationOverlay");
+    const isEn = currentLang === "en";
+    document.getElementById("celebrationTitle").textContent = isEn ? "CHALLENGE COMPLETED!" : "¡DESAFÍO COMPLETADO!";
+    document.getElementById("celebrationStarBadge").textContent = isEn ? "+1 Star Earned!" : "+1 Estrella Ganada!";
+    document.getElementById("celebrationTotal").textContent = isEn 
+      ? `Total: ${stars} ${stars === 1 ? "Star" : "Stars"}` 
+      : `¡Llevas ${stars} ${stars === 1 ? "Estrella" : "Estrellas"} acumuladas!`;
+
+    if (overlay) overlay.classList.add("active");
+
+    const cp = document.getElementById("challengePanel");
+    if (cp) cp.classList.add("solved");
+
+    const starsBadge = document.getElementById("starsCount");
+    if (starsBadge) {
+      starsBadge.classList.remove("star-pop");
+      void starsBadge.offsetWidth;
+      starsBadge.classList.add("star-pop");
+    }
+
+    if (celebrationTimer) clearTimeout(celebrationTimer);
+    celebrationTimer = setTimeout(() => {
+      dismissCelebration();
+    }, 2200);
+  }
+
+  function dismissCelebration() {
+    const overlay = document.getElementById("celebrationOverlay");
+    if (overlay) overlay.classList.remove("active");
+    const cp = document.getElementById("challengePanel");
+    if (cp) cp.classList.remove("solved");
+    if (celebrationTimer) {
+      clearTimeout(celebrationTimer);
+      celebrationTimer = null;
+    }
+  }
+
+  function isCurrentChallengeSolved() {
+    if (!currentChallenge) return false;
+    if (currentChallenge.type === "target" && currentValue === currentChallenge.value) return true;
+    if (currentChallenge.type === "digit" && getDigit(currentChallenge.idx) === currentChallenge.digit) return true;
+    return false;
+  }
+
   function checkChallengeAuto() {
     if (!currentChallenge) return;
-    let solved = false;
-    if (currentChallenge.type === "target" && currentValue === currentChallenge.value) solved = true;
-    else if (currentChallenge.type === "digit" && getDigit(currentChallenge.idx) === currentChallenge.digit) solved = true;
-
-    if (solved) {
+    if (isCurrentChallengeSolved()) {
       stars++;
       document.getElementById("lblStars").textContent = currentLang === "en"
         ? `${stars} ${stars === 1 ? "Star" : "Stars"}`
@@ -1301,15 +1547,21 @@
         ? `<span class="material-symbols-rounded" style="vertical-align: middle; color: #2F855A;">verified</span> EXCELLENT! Completed!` 
         : `<span class="material-symbols-rounded" style="vertical-align: middle; color: #2F855A;">verified</span> ¡EXCELENTE! ¡Completado!`;
       fb.style.color = "#2F855A";
-      playChimeSound();
+
+      triggerCelebrationReward();
+
       currentChallenge = null;
-      setTimeout(newChallenge, 2200);
+      setTimeout(newChallenge, 2400);
     }
   }
 
   function checkChallenge() {
     if (!currentChallenge) {
       newChallenge();
+      return;
+    }
+    if (isCurrentChallengeSolved()) {
+      checkChallengeAuto();
       return;
     }
     const fb = document.getElementById("challengeFeedback");
