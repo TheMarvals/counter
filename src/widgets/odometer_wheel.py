@@ -178,7 +178,7 @@ class OdometerWheel(QWidget):
         font.setFamilies(["Helvetica Neue", "Arial", "DejaVu Sans", "sans-serif"])
         painter.setFont(font)
 
-        slot_height = h * 0.58
+        slot_height = h * 0.52
 
         painter.save()
         painter.setClipRect(drum_rect)
@@ -192,10 +192,10 @@ class OdometerWheel(QWidget):
             if abs(norm_y) > 1.4:
                 continue
 
-            scale_y = math.cos(max(-1.45, min(1.45, norm_y * 1.05)))
-            scale_y = max(0.25, scale_y)
-            alpha = int(255 * (scale_y ** 1.8))
-            alpha = max(15, min(255, alpha))
+            scale_y = math.cos(max(-1.3, min(1.3, norm_y * 0.95)))
+            scale_y = max(0.40, scale_y)
+            alpha = int(255 * (scale_y ** 1.3))
+            alpha = max(65, min(255, alpha))
 
             painter.save()
             painter.translate(w * 0.5, curr_y)
@@ -214,18 +214,18 @@ class OdometerWheel(QWidget):
         painter.restore()
 
         # 5. Bisel de oclusión superior e inferior
-        top_shadow = QLinearGradient(0, 1, 0, 26)
-        top_shadow.setColorAt(0.0, QColor(0, 0, 0, 225))
+        top_shadow = QLinearGradient(0, 1, 0, 20)
+        top_shadow.setColorAt(0.0, QColor(0, 0, 0, 205))
         top_shadow.setColorAt(1.0, QColor(0, 0, 0, 0))
         painter.setPen(Qt.PenStyle.NoPen)
         painter.setBrush(QBrush(top_shadow))
-        painter.drawRect(QRectF(1.5, 1.5, w - 3, 24))
+        painter.drawRect(QRectF(1.5, 1.5, w - 3, 18))
 
-        bot_shadow = QLinearGradient(0, h - 26, 0, h - 1)
+        bot_shadow = QLinearGradient(0, h - 20, 0, h - 1)
         bot_shadow.setColorAt(0.0, QColor(0, 0, 0, 0))
-        bot_shadow.setColorAt(1.0, QColor(0, 0, 0, 225))
+        bot_shadow.setColorAt(1.0, QColor(0, 0, 0, 205))
         painter.setBrush(QBrush(bot_shadow))
-        painter.drawRect(QRectF(1.5, h - 26, w - 3, 24))
+        painter.drawRect(QRectF(1.5, h - 20, w - 3, 18))
 
         # 6. Borde exterior
         frame_pen = QPen(QColor(45, 48, 54), 1.0)

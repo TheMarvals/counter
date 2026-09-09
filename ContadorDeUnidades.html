@@ -217,6 +217,21 @@
       cursor: pointer;
       box-shadow: inset -3px 0 6px rgba(0,0,0,0.6), inset 3px 0 6px rgba(0,0,0,0.6);
     }
+    .wheel::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 2;
+      background: linear-gradient(180deg,
+        rgba(5, 5, 8, 0.90) 0%,
+        rgba(15, 16, 20, 0.42) 20%,
+        rgba(0, 0, 0, 0) 34%,
+        rgba(0, 0, 0, 0) 66%,
+        rgba(15, 16, 20, 0.42) 80%,
+        rgba(5, 5, 8, 0.90) 100%
+      );
+    }
     .wheel::after {
       content: "";
       position: absolute;
@@ -224,8 +239,9 @@
       left: 3px;
       right: 3px;
       height: 1px;
-      background: rgba(255,255,255,0.18);
+      background: rgba(255,255,255,0.22);
       pointer-events: none;
+      z-index: 3;
     }
     .wheel-inner {
       width: 100%;
@@ -233,19 +249,20 @@
       flex-direction: column;
       align-items: center;
       transform: translateY(0);
-      transition: transform 0.24s cubic-bezier(0.25, 1, 0.5, 1);
+      transition: transform 0.28s cubic-bezier(0.25, 1, 0.5, 1);
     }
     .wheel-digit {
       width: 100%;
-      height: 154px;
+      height: 80px;
       flex-shrink: 0;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 64px;
+      font-size: 58px;
       font-weight: 900;
       color: #F8F8FA;
       text-shadow: 0 3px 6px rgba(0,0,0,0.8);
+      user-select: none;
     }
 
     /* Punto o Coma Separador de Miles */
@@ -686,11 +703,16 @@
     } catch(e) {}
   }
 
+  const WHEEL_HEIGHT = 154;
+  const SLOT_HEIGHT = 80;
+  const CENTER_OFFSET = (WHEEL_HEIGHT - SLOT_HEIGHT) / 2; // 37px
+  let wheelPositions = [20, 20, 20, 20, 20, 20];
+
   function initWheels() {
     for (let i = 0; i < 6; i++) {
       const inner = document.getElementById("inner_" + i);
       inner.innerHTML = "";
-      for (let cycle = 0; cycle < 3; cycle++) {
+      for (let cycle = 0; cycle < 5; cycle++) {
         for (let d = 0; d < 10; d++) {
           const div = document.createElement("div");
           div.className = "wheel-digit";
@@ -698,6 +720,10 @@
           inner.appendChild(div);
         }
       }
+      wheelPositions[i] = 20 + getDigit(i);
+      const targetY = CENTER_OFFSET - wheelPositions[i] * SLOT_HEIGHT;
+      inner.style.transition = "none";
+      inner.style.transform = `translateY(${targetY}px)`;
     }
   }
 
@@ -822,9 +848,40 @@
 
       const inner = document.getElementById("inner_" + i);
       const digit = currentDigits[i];
-      if (currentDigits[i] !== prevDigits[i] || !animated) {
-        const targetY = -(10 + digit) * 154;
+      const prevDigit = prevDigits[i];
+
+      if (digit !== prevDigit || !animated) {
+        if (!animated) {
+          wheelPositions[i] = 20 + digit;
+          inner.style.transition = "none";
+        } else {
+          let diff = digit - prevDigit;
+          if (diff === -9) diff = 1;      // Salto 9 -> 0
+          else if (diff === 9) diff = -1; // Salto 0 -> 9
+          else if (diff > 5) diff -= 10;  // Giro óptimo hacia atrás
+          else if (diff < -5) diff += 10; // Giro óptimo hacia adelante
+
+          wheelPositions[i] += diff;
+          inner.style.transition = "transform 0.28s cubic-bezier(0.25, 1, 0.5, 1)";
+        }
+
+        const targetY = CENTER_OFFSET - wheelPositions[i] * SLOT_HEIGHT;
         inner.style.transform = `translateY(${targetY}px)`;
+
+        // Recentrar al ciclo 2 sin animación si se aleja
+        if (wheelPositions[i] >= 35 || wheelPositions[i] <= 15) {
+          const slotIdx = i;
+          const currentD = digit;
+          setTimeout(() => {
+            wheelPositions[slotIdx] = 20 + currentD;
+            const resetY = CENTER_OFFSET - wheelPositions[slotIdx] * SLOT_HEIGHT;
+            const el = document.getElementById("inner_" + slotIdx);
+            if (el) {
+              el.style.transition = "none";
+              el.style.transform = `translateY(${resetY}px)`;
+            }
+          }, 300);
+        }
       }
     }
     prevDigits = [...currentDigits];
