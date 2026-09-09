@@ -462,11 +462,11 @@
       z-index: 9999;
       display: none;
     }
-    /* Modal de Celebración estilo CPC Cheat Codes Library */
+    /* Modal de Celebración estructurado adaptado al estilo del Contador */
     .celebration-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(10, 10, 15, 0.86);
+      background: rgba(15, 23, 42, 0.65);
       backdrop-filter: blur(8px);
       -webkit-backdrop-filter: blur(8px);
       z-index: 9998;
@@ -475,27 +475,23 @@
       justify-content: center;
       opacity: 0;
       visibility: hidden;
-      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
       padding: 20px;
-      background-image: 
-        linear-gradient(rgba(0, 245, 212, 0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(0, 245, 212, 0.03) 1px, transparent 1px);
-      background-size: 32px 32px;
     }
     .celebration-overlay.active {
       opacity: 1;
       visibility: visible;
     }
     .code-modal {
-      background: #1a1a25;
+      background: #FFFFFF;
       border-radius: 16px;
       width: 100%;
-      max-width: 500px;
+      max-width: 480px;
       overflow: hidden;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      box-shadow: 0 25px 80px rgba(0, 0, 0, 0.65), 0 0 35px rgba(0, 245, 212, 0.18);
-      transform: scale(0.9) translateY(20px);
-      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      border: 1px solid #D2D6DC;
+      box-shadow: 0 20px 50px rgba(15, 23, 42, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.8);
+      transform: scale(0.92) translateY(18px);
+      transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
       display: flex;
       flex-direction: column;
     }
@@ -506,9 +502,9 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 18px 24px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-      background: #12121a;
+      padding: 16px 20px;
+      border-bottom: 1px solid #E2E8F0;
+      background: #F8FAFC;
       flex-shrink: 0;
     }
     .code-modal-title {
@@ -518,85 +514,78 @@
       text-align: left;
     }
     .code-modal-title-icon {
-      font-size: 1.4rem;
-      width: 42px;
-      height: 42px;
+      width: 40px;
+      height: 40px;
       border-radius: 10px;
-      background: rgba(0, 245, 212, 0.1);
-      border: 1px solid rgba(0, 245, 212, 0.3);
-      color: #00f5d4;
+      background: #EBF8FF;
+      border: 1.5px solid #BEE3F8;
+      color: #165E7D;
       display: flex;
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
     }
+    .code-modal-title-icon .material-symbols-rounded {
+      font-size: 22px;
+    }
     .code-modal-title h3 {
-      font-family: 'Space Mono', monospace;
-      font-size: 0.92rem;
-      font-weight: 700;
-      color: #00f5d4;
+      font-size: 15px;
+      font-weight: 800;
+      color: #165E7D;
       margin: 0;
-      letter-spacing: 0.5px;
+      letter-spacing: -0.2px;
     }
     .code-modal-title p {
-      font-size: 0.78rem;
-      color: #8E8EA0;
-      margin: 3px 0 0 0;
-      font-weight: 500;
+      font-size: 12px;
+      font-weight: 600;
+      color: #718096;
+      margin: 2px 0 0 0;
     }
     .code-modal-close {
-      background: transparent;
-      border: 2px solid #2a2a3a;
-      color: #8E8EA0;
-      width: 38px;
-      height: 38px;
-      border-radius: 10px;
+      background: #FFFFFF;
+      border: 1.5px solid #CBD5E0;
+      color: #718096;
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: all 0.25s ease;
+      font-size: 14px;
+      font-weight: 800;
+      transition: all 0.15s ease;
       flex-shrink: 0;
     }
     .code-modal-close:hover {
-      border-color: #f72585;
-      color: #f72585;
-      background: rgba(247, 37, 133, 0.1);
+      border-color: #E35E28;
+      color: #E35E28;
+      background: #FFF5F0;
     }
     .code-modal-body {
-      padding: 22px 24px;
-      background: #1a1a25;
+      padding: 20px;
+      background: #FFFFFF;
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      gap: 14px;
       text-align: center;
     }
     .cpc-success-banner {
-      background: #0d1117;
-      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: linear-gradient(180deg, #FFFDF5 0%, #FEFCBF 100%);
+      border: 2px solid #F6E05E;
       border-radius: 12px;
-      padding: 20px 18px;
+      padding: 20px 16px;
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: 12px;
-      box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.4);
+      box-shadow: 0 4px 14px rgba(214, 158, 46, 0.12);
     }
     .cpc-rainbow-title {
-      font-family: 'Space Mono', monospace;
-      font-size: 1.35rem;
-      font-weight: 700;
-      background: linear-gradient(135deg, #00f5d4, #f72585, #fee440);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      animation: rainbowShift 2.5s linear infinite;
-      background-size: 200% auto;
-      letter-spacing: 0.5px;
-    }
-    @keyframes rainbowShift {
-      0% { background-position: 0% center; }
-      100% { background-position: 200% center; }
+      font-size: 22px;
+      font-weight: 900;
+      color: #744210;
+      letter-spacing: -0.5px;
     }
     .cpc-star-showcase {
       display: flex;
@@ -604,52 +593,74 @@
       justify-content: center;
       position: relative;
     }
-    .cpc-star-showcase .material-symbols-rounded {
-      font-size: 64px;
-      color: #fee440;
-      font-variation-settings: 'FILL' 1;
-      filter: drop-shadow(0 0 16px rgba(254, 228, 64, 0.55));
-      animation: cpcPulse 1.8s infinite alternate ease-in-out;
+    .cpc-medallion-badge {
+      width: 74px;
+      height: 74px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #F6E05E 0%, #D69E2E 100%);
+      border: 3px solid #FFFFFF;
+      box-shadow: 0 6px 18px rgba(214, 158, 46, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: modalStarPulse 1.8s infinite alternate ease-in-out;
     }
-    @keyframes cpcPulse {
-      0% { transform: scale(0.95); }
-      100% { transform: scale(1.08); }
+    @keyframes modalStarPulse {
+      0% { transform: scale(0.96); }
+      100% { transform: scale(1.06); }
+    }
+    .cpc-medallion-badge .material-symbols-rounded {
+      font-size: 44px;
+      color: #FFFFFF;
+      font-variation-settings: 'FILL' 1;
+      filter: drop-shadow(0 2px 4px rgba(116, 66, 16, 0.4));
     }
     .cpc-stats-row {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 12px;
+      gap: 10px;
       width: 100%;
     }
     .cpc-stat-card {
-      background: #12121a;
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 10px;
-      padding: 12px 14px;
+      background: #FFFFFF;
+      border-radius: 8px;
+      padding: 10px 14px;
       text-align: left;
     }
+    .cpc-stat-card.card-reward {
+      border: 1.5px solid #ECC94B;
+      background: #FEFCBF;
+    }
+    .cpc-stat-card.card-total {
+      border: 1.5px solid #CBD5E0;
+      background: #EBF4F6;
+    }
     .cpc-stat-label {
-      font-family: 'Space Mono', monospace;
-      font-size: 0.68rem;
-      color: #6a6a7a;
+      font-size: 11px;
+      font-weight: 800;
       text-transform: uppercase;
-      letter-spacing: 1px;
+      letter-spacing: 0.5px;
       display: block;
-      margin-bottom: 4px;
+      margin-bottom: 2px;
+    }
+    .card-reward .cpc-stat-label {
+      color: #744210;
+    }
+    .card-total .cpc-stat-label {
+      color: #165E7D;
     }
     .cpc-stat-val {
-      font-family: 'Space Mono', monospace;
-      font-size: 0.92rem;
-      font-weight: 700;
+      font-size: 15px;
+      font-weight: 900;
       display: flex;
       align-items: center;
       gap: 6px;
     }
-    .cpc-stat-val.yellow {
-      color: #fee440;
+    .card-reward .cpc-stat-val {
+      color: #744210;
     }
-    .cpc-stat-val.cyan {
-      color: #00f5d4;
+    .card-total .cpc-stat-val {
+      color: #165E7D;
     }
     .cpc-progress-container {
       width: 100%;
@@ -658,76 +669,73 @@
     .cpc-progress-label {
       display: flex;
       justify-content: space-between;
-      font-family: 'Space Mono', monospace;
-      font-size: 0.72rem;
-      color: #6a6a7a;
-      margin-bottom: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #4A5568;
+      margin-bottom: 5px;
     }
     .cpc-progress-bar {
       height: 8px;
-      background: #2a2a3a;
+      background: #EDF2F7;
       border-radius: 4px;
       overflow: hidden;
     }
     .cpc-progress-fill {
       height: 100%;
-      background: linear-gradient(90deg, #00f5d4, #7b2cbf);
+      background: linear-gradient(90deg, #38A169 0%, #165E7D 100%);
       border-radius: 4px;
-      box-shadow: 0 0 10px rgba(0, 245, 212, 0.5);
       transition: width 0.6s ease;
     }
     .code-modal-footer {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 15px 24px;
-      background: #12121a;
-      border-top: 1px solid rgba(255, 255, 255, 0.1);
-      gap: 12px;
+      padding: 14px 20px;
+      background: #F8FAFC;
+      border-top: 1px solid #E2E8F0;
+      gap: 10px;
+      border-radius: 0 0 16px 16px;
     }
     .code-modal-footer p {
-      font-family: 'Space Mono', monospace;
-      font-size: 0.74rem;
-      color: #6a6a7a;
+      font-size: 12.5px;
+      font-weight: 600;
+      color: #718096;
       margin: 0;
       text-align: left;
     }
     .cpc-btn-group {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
     }
     .cpc-btn {
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      padding: 9px 16px;
-      font-family: 'Space Mono', monospace;
-      font-size: 0.8rem;
-      font-weight: 700;
-      border-radius: 8px;
+      padding: 8px 16px;
+      font-size: 13px;
+      font-weight: 800;
+      border-radius: 6px;
       cursor: pointer;
-      transition: all 0.25s ease;
+      transition: all 0.15s ease;
     }
     .cpc-btn.secondary {
-      background: #1a1a25;
-      border: 1px solid #2a2a3a;
-      color: #e0e0e0;
+      background: #ED8936;
+      color: #FFFFFF;
+      border: 1px solid #DD6B20;
+      box-shadow: 0 2px 4px rgba(237, 137, 54, 0.25);
     }
     .cpc-btn.secondary:hover {
-      border-color: #00f5d4;
-      color: #00f5d4;
-      background: rgba(0, 245, 212, 0.1);
+      background: #DD6B20;
     }
     .cpc-btn.primary {
-      background: linear-gradient(135deg, #00f5d4, #00bfa5);
-      border: none;
-      color: #0a0a0f;
-      box-shadow: 0 4px 14px rgba(0, 245, 212, 0.35);
+      background: #165E7D;
+      color: #FFFFFF;
+      border: 1px solid #0E4459;
+      box-shadow: 0 2px 4px rgba(22, 94, 125, 0.25);
     }
     .cpc-btn.primary:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 6px 18px rgba(0, 245, 212, 0.5);
+      background: #2080AA;
     }
     .star-pop {
       animation: starPopAnim 0.75s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -1017,20 +1025,22 @@
       <div class="cpc-success-banner">
         <div class="cpc-rainbow-title" id="celebrationTitle">¡RETO SUPERADO!</div>
         <div class="cpc-star-showcase">
-          <span class="material-symbols-rounded">star</span>
+          <div class="cpc-medallion-badge">
+            <span class="material-symbols-rounded">star</span>
+          </div>
         </div>
         <div class="cpc-stats-row">
-          <div class="cpc-stat-card">
+          <div class="cpc-stat-card card-reward">
             <span class="cpc-stat-label">Recompensa</span>
-            <div class="cpc-stat-val yellow">
-              <span class="material-symbols-rounded" style="font-size: 19px; font-variation-settings: 'FILL' 1;">star</span>
+            <div class="cpc-stat-val">
+              <span class="material-symbols-rounded" style="font-size: 20px; font-variation-settings: 'FILL' 1; color: #D69E2E;">star</span>
               <span id="celebrationStarBadge">+1 Estrella</span>
             </div>
           </div>
-          <div class="cpc-stat-card">
-            <span class="cpc-stat-label">Total Estrellas</span>
-            <div class="cpc-stat-val cyan">
-              <span class="material-symbols-rounded" style="font-size: 19px; font-variation-settings: 'FILL' 1;">military_tech</span>
+          <div class="cpc-stat-card card-total">
+            <span class="cpc-stat-label">Total Acumulado</span>
+            <div class="cpc-stat-val">
+              <span class="material-symbols-rounded" style="font-size: 20px; font-variation-settings: 'FILL' 1; color: #165E7D;">military_tech</span>
               <span id="celebrationTotal">1 Estrella</span>
             </div>
           </div>
@@ -1039,7 +1049,7 @@
         <div class="cpc-progress-container">
           <div class="cpc-progress-label">
             <span id="lblModalProgress">Nivel de Maestría</span>
-            <span id="lblModalProgressStatus" style="color: #00f5d4;">100% Completado</span>
+            <span id="lblModalProgressStatus" style="color: #165E7D; font-weight: 800;">100% Completado</span>
           </div>
           <div class="cpc-progress-bar">
             <div class="cpc-progress-fill" style="width: 100%;"></div>
