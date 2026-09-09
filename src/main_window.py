@@ -178,7 +178,7 @@ class MainWindow(QMainWindow):
         row1.addWidget(self.btn_mode)
 
         # Botón Idioma
-        self.btn_lang = QPushButton("🌐 ES")
+        self.btn_lang = QPushButton("ES")
         self.btn_lang.setCursor(Qt.CursorShape.PointingHandCursor)
         self.btn_lang.setStyleSheet("""
             QPushButton {
@@ -282,7 +282,7 @@ class MainWindow(QMainWindow):
             self.btn_lvl4.setText("4 Digits")
             self.btn_lvl6.setText("6 Digits")
             self.btn_add_col.setText("+ Column")
-            self.btn_lang.setText("🌐 EN (English)")
+            self.btn_lang.setText("EN (English)")
             self.btn_random.setText("Surprise Number")
             self.btn_reset.setText("Reset to 0")
             self.btn_sound.setText("Sound: OFF" if self.sound_player.muted else "Sound: ON")
@@ -301,7 +301,7 @@ class MainWindow(QMainWindow):
             self.btn_lvl4.setText("4 Dígitos")
             self.btn_lvl6.setText("6 Dígitos")
             self.btn_add_col.setText("+ Columna")
-            self.btn_lang.setText("🌐 ES (Español)")
+            self.btn_lang.setText("ES (Español)")
             self.btn_random.setText("Número Sorpresa")
             self.btn_reset.setText("Poner a 0")
             self.btn_sound.setText("Sonido: OFF" if self.sound_player.muted else "Sonido: ON")

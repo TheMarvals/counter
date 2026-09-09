@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Contador Mecánico — Aprendiendo el Valor Posicional</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
   <style>
     * {
       box-sizing: border-box;
@@ -11,6 +12,21 @@
       padding: 0;
       user-select: none;
       -webkit-user-select: none;
+    }
+    .material-symbols-rounded {
+      font-family: 'Material Symbols Rounded';
+      font-weight: normal;
+      font-style: normal;
+      font-size: 19px;
+      line-height: 1;
+      display: inline-block;
+      text-transform: none;
+      letter-spacing: normal;
+      word-wrap: normal;
+      white-space: nowrap;
+      direction: ltr;
+      vertical-align: middle;
+      -webkit-font-smoothing: antialiased;
     }
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -62,6 +78,10 @@
       background: #EDF2F7;
       color: #4A5568;
       cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
       transition: all 0.15s ease;
     }
     button:hover {
@@ -480,22 +500,40 @@
         <button id="lvl3" onclick="setLevel(3)">3 Dígitos</button>
         <button id="lvl4" onclick="setLevel(4)">4 Dígitos</button>
         <button id="lvl6" class="active" onclick="setLevel(6)">6 Dígitos</button>
-        <button id="btnAddCol" class="btn-dashed" onclick="addNextColumn()">+ Columna</button>
+        <button id="btnAddCol" class="btn-dashed" onclick="addNextColumn()">
+          <span class="material-symbols-rounded">add</span>
+          <span id="lblAddCol">Columna</span>
+        </button>
       </div>
       <div class="btn-group">
         <button id="btnMode" onclick="toggleMode()">Modo: Automático</button>
-        <button id="btnLang" class="btn-yellow" onclick="toggleLanguage()">🌐 ES</button>
+        <button id="btnLang" class="btn-yellow" onclick="toggleLanguage()">
+          <span class="material-symbols-rounded">language</span>
+          <span id="lblLang">ES</span>
+        </button>
       </div>
     </div>
     <div class="top-bar-row">
       <div class="btn-group">
         <button id="btnZeros" onclick="toggleZeros()">Ceros Izq: Ocultos</button>
-        <button id="btnRandom" class="btn-yellow" onclick="setRandom()">🎲 Número Sorpresa</button>
-        <button id="btnReset" class="btn-red" onclick="resetCounter()">🔄 Poner a 0</button>
+        <button id="btnRandom" class="btn-yellow" onclick="setRandom()">
+          <span class="material-symbols-rounded">casino</span>
+          <span id="lblRandom">Número Sorpresa</span>
+        </button>
+        <button id="btnReset" class="btn-red" onclick="resetCounter()">
+          <span class="material-symbols-rounded">restart_alt</span>
+          <span id="lblReset">Poner a 0</span>
+        </button>
       </div>
       <div class="btn-group">
-        <button id="btnSound" onclick="toggleSound()">🔊 Sonido: ON</button>
-        <button id="btnChallenges" onclick="toggleChallenges()">🎮 Retos: ON</button>
+        <button id="btnSound" onclick="toggleSound()">
+          <span class="material-symbols-rounded" id="iconSound">volume_up</span>
+          <span id="lblSound">Sonido: ON</span>
+        </button>
+        <button id="btnChallenges" onclick="toggleChallenges()">
+          <span class="material-symbols-rounded">sports_esports</span>
+          <span id="lblChallenges">Retos: ON</span>
+        </button>
       </div>
     </div>
   </div>
@@ -609,8 +647,14 @@
   <!-- Panel de Descomposición Aditiva y Palabras -->
   <div class="breakdown-panel">
     <div class="breakdown-header">
-      <span class="breakdown-title" id="lblBreakdownTitle">✨ Valor Posicional y Descomposición</span>
-      <button class="btn-speak" id="btnSpeak" onclick="speakCurrentNumber()">🔊 Escuchar cómo se lee</button>
+      <span class="breakdown-title" id="lblBreakdownTitle" style="display: inline-flex; align-items: center; gap: 6px;">
+        <span class="material-symbols-rounded">auto_awesome</span>
+        <span id="lblBreakdownText">Valor Posicional y Descomposición</span>
+      </span>
+      <button class="btn-speak" id="btnSpeak" onclick="speakCurrentNumber()">
+        <span class="material-symbols-rounded">volume_up</span>
+        <span id="lblSpeak">Escuchar cómo se lee</span>
+      </button>
     </div>
     <div class="words-box" id="wordsDisplay"></div>
     <div class="chips-row" id="chipsContainer"></div>
@@ -620,14 +664,26 @@
   <!-- Panel de Retos -->
   <div class="challenge-panel" id="challengePanel">
     <div class="challenge-header">
-      <span style="font-weight: 800; color: #744210;" id="lblChallengeTitle">🎮 Modo Desafíos Matemáticos</span>
-      <span style="font-weight: 800; color: #D69E2E;" id="starsCount">⭐ 0 Estrellas</span>
+      <span style="font-weight: 800; color: #744210; display: inline-flex; align-items: center; gap: 6px;" id="lblChallengeTitle">
+        <span class="material-symbols-rounded">sports_esports</span>
+        <span id="lblChallengeHeading">Modo Desafíos Matemáticos</span>
+      </span>
+      <span style="font-weight: 800; color: #D69E2E; display: inline-flex; align-items: center; gap: 4px;" id="starsCount">
+        <span class="material-symbols-rounded" style="font-variation-settings: 'FILL' 1;">star</span>
+        <span id="lblStars">0 Estrellas</span>
+      </span>
     </div>
     <div class="challenge-prompt" id="challengePrompt">Pulsa 'Nuevo Desafío' para comenzar.</div>
     <div class="challenge-actions">
-      <button style="background: #ED8936; color: white;" id="btnNewChallenge" onclick="newChallenge()">🎲 Nuevo Desafío</button>
-      <button style="background: #38A169; color: white;" id="btnCheckChallenge" onclick="checkChallenge()">✅ Comprobar</button>
-      <span id="challengeFeedback" style="font-weight: 800; margin-left: 10px;"></span>
+      <button style="background: #ED8936; color: white;" id="btnNewChallenge" onclick="newChallenge()">
+        <span class="material-symbols-rounded">casino</span>
+        <span id="lblNewChallenge">Nuevo Desafío</span>
+      </button>
+      <button style="background: #38A169; color: white;" id="btnCheckChallenge" onclick="checkChallenge()">
+        <span class="material-symbols-rounded">check_circle</span>
+        <span id="lblCheckChallenge">Comprobar</span>
+      </button>
+      <span id="challengeFeedback" style="font-weight: 800; margin-left: 10px; display: inline-flex; align-items: center; gap: 4px;"></span>
     </div>
   </div>
 
@@ -1085,30 +1141,35 @@
   function applyLanguageTexts() {
     const isEn = currentLang === "en";
     document.title = isEn ? "Mechanical Counter — Understanding Place Value" : "Contador Mecánico — Aprendiendo el Valor Posicional";
-    document.getElementById("btnLang").textContent = isEn ? "🌐 EN" : "🌐 ES";
+    document.getElementById("lblLang").textContent = isEn ? "EN" : "ES";
     document.getElementById("lblLevel").textContent = isEn ? "Level:" : "Nivel:";
     document.getElementById("lvl3").textContent = isEn ? "3 Digits" : "3 Dígitos";
     document.getElementById("lvl4").textContent = isEn ? "4 Digits" : "4 Dígitos";
     document.getElementById("lvl6").textContent = isEn ? "6 Digits" : "6 Dígitos";
-    document.getElementById("btnAddCol").textContent = isEn ? "+ Column" : "+ Columna";
+    document.getElementById("lblAddCol").textContent = isEn ? "Column" : "Columna";
     document.getElementById("btnMode").textContent = isManualMode 
       ? (isEn ? "Mode: Manual" : "Modo: Manual")
       : (isEn ? "Mode: Automatic" : "Modo: Automático");
     document.getElementById("btnZeros").textContent = hideLeadingZeros 
       ? (isEn ? "Leading Zeros: Hidden" : "Ceros Izq: Ocultos")
       : (isEn ? "Leading Zeros: Visible" : "Ceros Izq: Visibles");
-    document.getElementById("btnRandom").textContent = isEn ? "🎲 Surprise Number" : "🎲 Número Sorpresa";
-    document.getElementById("btnReset").textContent = isEn ? "🔄 Reset to 0" : "🔄 Poner a 0";
-    document.getElementById("btnSound").textContent = soundEnabled 
-      ? (isEn ? "🔊 Sound: ON" : "🔊 Sonido: ON")
-      : (isEn ? "🔇 Sound: OFF" : "🔇 Sonido: OFF");
-    document.getElementById("btnChallenges").textContent = isEn ? "🎮 Challenges: ON" : "🎮 Retos: ON";
-    document.getElementById("lblBreakdownTitle").textContent = isEn ? "✨ Place Value and Expanded Form" : "✨ Valor Posicional y Descomposición";
-    document.getElementById("btnSpeak").textContent = isEn ? "🔊 Listen how to read" : "🔊 Escuchar cómo se lee";
-    document.getElementById("lblChallengeTitle").textContent = isEn ? "🎮 Math Challenges" : "🎮 Modo Desafíos Matemáticos";
-    document.getElementById("btnNewChallenge").textContent = isEn ? "🎲 New Challenge" : "🎲 Nuevo Desafío";
-    document.getElementById("btnCheckChallenge").textContent = isEn ? "✅ Check" : "✅ Comprobar";
-    document.getElementById("starsCount").textContent = isEn ? `⭐ ${stars} Stars` : `⭐ ${stars} Estrellas`;
+    document.getElementById("lblRandom").textContent = isEn ? "Surprise Number" : "Número Sorpresa";
+    document.getElementById("lblReset").textContent = isEn ? "Reset to 0" : "Poner a 0";
+    document.getElementById("iconSound").textContent = soundEnabled ? "volume_up" : "volume_off";
+    document.getElementById("lblSound").textContent = soundEnabled 
+      ? (isEn ? "Sound: ON" : "Sonido: ON")
+      : (isEn ? "Sound: OFF" : "Sonido: OFF");
+    const cp = document.getElementById("challengePanel");
+    const isChallVisible = cp && cp.style.display !== "none";
+    document.getElementById("lblChallenges").textContent = isChallVisible
+      ? (isEn ? "Challenges: ON" : "Retos: ON")
+      : (isEn ? "Challenges: OFF" : "Retos: OFF");
+    document.getElementById("lblBreakdownText").textContent = isEn ? "Place Value and Expanded Form" : "Valor Posicional y Descomposición";
+    document.getElementById("lblSpeak").textContent = isEn ? "Listen how to read" : "Escuchar cómo se lee";
+    document.getElementById("lblChallengeHeading").textContent = isEn ? "Math Challenges" : "Modo Desafíos Matemáticos";
+    document.getElementById("lblNewChallenge").textContent = isEn ? "New Challenge" : "Nuevo Desafío";
+    document.getElementById("lblCheckChallenge").textContent = isEn ? "Check" : "Comprobar";
+    document.getElementById("lblStars").textContent = isEn ? `${stars} ${stars === 1 ? "Star" : "Stars"}` : `${stars} ${stars === 1 ? "Estrella" : "Estrellas"}`;
     document.getElementById("bannerMsg").textContent = isManualMode
       ? (isEn ? "Manual Mode active: move each column yourself to complete regroupings!" : "Modo Manual activo: ¡mueve cada posición tú mismo para completar los acarreos!")
       : (isEn ? "Use the ▲ and ▼ arrows to see how values change!" : "¡Usa las flechas ▲ y ▼ para ver cómo cambian los valores!");
@@ -1138,18 +1199,19 @@
 
   function toggleSound() {
     soundEnabled = !soundEnabled;
-    document.getElementById("btnSound").textContent = soundEnabled 
-      ? (currentLang === "en" ? "🔊 Sound: ON" : "🔊 Sonido: ON")
-      : (currentLang === "en" ? "🔇 Sound: OFF" : "🔇 Sonido: OFF");
+    document.getElementById("iconSound").textContent = soundEnabled ? "volume_up" : "volume_off";
+    document.getElementById("lblSound").textContent = soundEnabled 
+      ? (currentLang === "en" ? "Sound: ON" : "Sonido: ON")
+      : (currentLang === "en" ? "Sound: OFF" : "Sonido: OFF");
   }
 
   function toggleChallenges() {
     const cp = document.getElementById("challengePanel");
     const vis = cp.style.display !== "none";
     cp.style.display = vis ? "none" : "flex";
-    document.getElementById("btnChallenges").textContent = vis 
-      ? (currentLang === "en" ? "🎮 Challenges: OFF" : "🎮 Retos: OFF")
-      : (currentLang === "en" ? "🎮 Challenges: ON" : "🎮 Retos: ON");
+    document.getElementById("lblChallenges").textContent = vis 
+      ? (currentLang === "en" ? "Challenges: OFF" : "Retos: OFF")
+      : (currentLang === "en" ? "Challenges: ON" : "Retos: ON");
   }
 
   function speakCurrentNumber() {
@@ -1192,8 +1254,8 @@
         type: "target",
         value: target,
         text: currentLang === "en" 
-          ? `🎯 Mission: Roll the wheels to make <b>${formatNumber(target)}</b>!`
-          : `🎯 Misión: ¡Gira los cilindros hasta formar el número <b>${formatNumber(target)}</b>!`
+          ? `<span class="material-symbols-rounded" style="vertical-align: middle; color: #DD6B20;">flag</span> Mission: Roll the wheels to make <b>${formatNumber(target)}</b>!`
+          : `<span class="material-symbols-rounded" style="vertical-align: middle; color: #DD6B20;">flag</span> Misión: ¡Gira los cilindros hasta formar el número <b>${formatNumber(target)}</b>!`
       };
     } else if (type === "digit") {
       const idx = Math.floor(Math.random() * activeDigits);
@@ -1203,8 +1265,8 @@
         idx: idx,
         digit: targetDigit,
         text: currentLang === "en"
-          ? `🎯 Mission: Set the <b>${colFullNames[idx]} (${colNames[idx]})</b> wheel to <b>${targetDigit}</b>.`
-          : `🎯 Misión: Haz que la cifra de las <b>${colFullNames[idx]} (${colNames[idx]})</b> sea igual a <b>${targetDigit}</b>.`
+          ? `<span class="material-symbols-rounded" style="vertical-align: middle; color: #DD6B20;">flag</span> Mission: Set the <b>${colFullNames[idx]} (${colNames[idx]})</b> wheel to <b>${targetDigit}</b>.`
+          : `<span class="material-symbols-rounded" style="vertical-align: middle; color: #DD6B20;">flag</span> Misión: Haz que la cifra de las <b>${colFullNames[idx]} (${colNames[idx]})</b> sea igual a <b>${targetDigit}</b>.`
       };
     } else {
       const idx = Math.floor(Math.random() * Math.min(4, activeDigits));
@@ -1214,8 +1276,8 @@
         type: "target",
         value: target,
         text: currentLang === "en"
-          ? `➕ Mission: Add <b>${amount} ${colFullNames[idx].toLowerCase()}</b> to the current number!`
-          : `➕ Misión: Al número actual, ¡suma <b>${amount} ${colFullNames[idx].toLowerCase()}</b>!`
+          ? `<span class="material-symbols-rounded" style="vertical-align: middle; color: #3182CE;">add_circle</span> Mission: Add <b>${amount} ${colFullNames[idx].toLowerCase()}</b> to the current number!`
+          : `<span class="material-symbols-rounded" style="vertical-align: middle; color: #3182CE;">add_circle</span> Misión: Al número actual, ¡suma <b>${amount} ${colFullNames[idx].toLowerCase()}</b>!`
       };
     }
 
@@ -1231,11 +1293,13 @@
 
     if (solved) {
       stars++;
-      document.getElementById("starsCount").textContent = currentLang === "en"
-        ? `⭐ ${stars} ${stars === 1 ? "Star" : "Stars"}`
-        : `⭐ ${stars} ${stars === 1 ? "Estrella" : "Estrellas"}`;
+      document.getElementById("lblStars").textContent = currentLang === "en"
+        ? `${stars} ${stars === 1 ? "Star" : "Stars"}`
+        : `${stars} ${stars === 1 ? "Estrella" : "Estrellas"}`;
       const fb = document.getElementById("challengeFeedback");
-      fb.textContent = currentLang === "en" ? "🎉 EXCELLENT! Completed!" : "🎉 ¡EXCELENTE! ¡Completado!";
+      fb.innerHTML = currentLang === "en" 
+        ? `<span class="material-symbols-rounded" style="vertical-align: middle; color: #2F855A;">verified</span> EXCELLENT! Completed!` 
+        : `<span class="material-symbols-rounded" style="vertical-align: middle; color: #2F855A;">verified</span> ¡EXCELENTE! ¡Completado!`;
       fb.style.color = "#2F855A";
       playChimeSound();
       currentChallenge = null;

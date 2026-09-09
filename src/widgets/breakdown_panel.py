@@ -87,7 +87,7 @@ class BreakdownPanel(QFrame):
 
         top_row.addStretch()
 
-        self.speak_btn = QPushButton("🔊 Escuchar cómo se lee")
+        self.speak_btn = QPushButton("Escuchar cómo se lee")
         self.speak_btn.setCursor(Qt.CursorShape.PointingHandCursor)
         self.speak_btn.setFont(QFont("sans-serif", 11, QFont.Weight.Bold))
         self.speak_btn.setStyleSheet("""
@@ -152,14 +152,14 @@ class BreakdownPanel(QFrame):
         lang = self.model.lang
         if lang == "en":
             self.title_label.setText("Place Value and Expanded Form")
-            self.speak_btn.setText("🔊 Listen how to read")
+            self.speak_btn.setText("Listen how to read")
             if self.model.mode == "manual":
                 self.pedagogy_banner.setText("Manual Mode active: move each column yourself to complete regroupings!")
             else:
                 self.pedagogy_banner.setText("Use the ▲ and ▼ arrows to see how values change!")
         else:
             self.title_label.setText("Valor Posicional y Descomposición")
-            self.speak_btn.setText("🔊 Escuchar cómo se lee")
+            self.speak_btn.setText("Escuchar cómo se lee")
             if self.model.mode == "manual":
                 self.pedagogy_banner.setText("Modo Manual activo: ¡mueve cada posición tú mismo para completar los acarreos!")
             else:
@@ -194,7 +194,7 @@ class BreakdownPanel(QFrame):
                 self.chips_layout.addWidget(plus_label)
 
     def _on_carry_event(self, message: str, source_col: int):
-        self.pedagogy_banner.setText(f"★ {message}")
+        self.pedagogy_banner.setText(f"{message}")
         self.pedagogy_banner.setStyleSheet("""
             background-color: #C6F6D5;
             color: #22543D;

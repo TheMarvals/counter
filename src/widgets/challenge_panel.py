@@ -45,7 +45,7 @@ class ChallengePanel(QFrame):
 
         header.addStretch()
 
-        self.stars_label = QLabel("★ 0 Estrellas")
+        self.stars_label = QLabel("0 Estrellas")
         self.stars_label.setFont(QFont("DejaVu Sans", 11, QFont.Weight.Bold))
         self.stars_label.setStyleSheet("color: #D69E2E;")
         header.addWidget(self.stars_label)
@@ -182,7 +182,7 @@ class ChallengePanel(QFrame):
 
     def _handle_success(self):
         self.stars += 1
-        self.stars_label.setText(f"★ {self.stars} {'Estrellas' if self.stars != 1 else 'Estrella'}")
+        self.stars_label.setText(f"{self.stars} {'Estrellas' if self.stars != 1 else 'Estrella'}")
         self.feedback_label.setText("¡EXCELENTE! ¡Completado con éxito!")
         self.feedback_label.setStyleSheet("color: #2F855A;")
         self.sound_player.play_chime()
